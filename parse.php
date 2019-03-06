@@ -124,7 +124,10 @@
     const R_SYMB_INT = '/([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)/';
 
     /// @var Defines regex for matching label operands.
-    const R_LABELARG = '/[\t\f ]+[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*\s*/';
+    const R_LABELARG = '/[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*\s*/';
+
+    /// @var Defines regex for matching comments.
+    const R_COMMENT = '/\#.*/';
 
 
     /// Analyzes a line of code detecting instructions and their operands,
@@ -133,18 +136,23 @@
     /// @param $line  The line of code being analyzed.
     /// @param $xmlW  The XML Writer object used to write the xml document.
     function analyze_instruction($line, $xmlW) {
-      if (preg_match_all(self::R_MOVE, $line, $matches, PREG_SET_ORDER, 0 )) {
+      if (preg_match_all(self::R_MOVE, $line)) {
         $splitarray = preg_split(self::R_WHITESPACE, $line);
-        if (preg_match_all(self::R_VAR, $splitarray[1], $matches, PREG_SET_ORDER, 0) && preg_match_all(self::R_SYMB, $splitarray[2], $matches, PREG_SET_ORDER, 0))
+
+        if (preg_match_all(self::R_VAR, $splitarray[1]) && preg_match_all(self::R_SYMB, $splitarray[2]) && (count($splitarray) == 3 || preg_match_all(self::R_COMMENT, $splitarray[3])))
   			   echo("FOUND MOVE\n");
-  		}
+        else exit(22);
+      }
+  		//} elseif (preg_match_all(self::R_PUSHFRAME, $line, $matches, PREG_SET_ORDER, 0)) {
+        // code...
+      //}
     }
 
     function do_the_thing($stdin) {
       $i = 0;
 
-      while ($i < 10) {
-        #echo $i;
+      while ($i < 15) {
+        echo $i;
         $line = fgets($stdin);
         self::analyze_instruction($line, $xmlW);
         $i = $i + 1;
