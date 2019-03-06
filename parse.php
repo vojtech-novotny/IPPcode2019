@@ -1,94 +1,143 @@
 <?php
   class lexicalAnalyzator {
-    # MOVE〈var〉〈symb〉
-    const R_MOVE = '/^\s*MOVE[\t\f ]+[GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*|bool@(true|false)|nil@nil)\s*/';
-    # CREATEFRAME
+
+    // ### Definitions of regular expression detecting instruction OP Codes.
+
+    /// @var Defines regex for detecting instruction # MOVE〈var〉〈symb〉
+    const R_MOVE = '/^\s*MOVE.*/';
+
+    /// @var Defines regex for detecting instruction # CREATEFRAME
     const R_CREATEFRAME = '/^\s*CREATEFRAME.*/';
-    # PUSHFRAME
+
+    /// @var Defines regex for detecting instruction # PUSHFRAME
     const R_PUSHFRAME = '/^\s*PUSHFRAME.*/';
-    # POPFRAME
+
+    /// @var Defines regex for detecting instruction # POPFRAME
     const R_POPFRAME = '/^\s*POPFRAME.*/';
-    # DEFVAR〈var〉
-    const R_DEFVAR = '/^\s*DEFVAR[\t\f ]+[GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*\s*/';
-    # CALL〈label〉
-    const R_CALL = '/^\s*CALL[\t\f ]+[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*\s*/';
-    # RETURN
+
+    /// @var Defines regex for detecting instruction # DEFVAR〈var〉
+    const R_DEFVAR = '/^\s*DEFVAR.*/';
+
+    /// @var Defines regex for detecting instruction # CALL〈label〉
+    const R_CALL = '/^\s*CALL.*/';
+
+    /// @var Defines regex for detecting instruction # RETURN
     const R_RETURN = '/^\s*RETURN.*/';
-    # PUSHS〈symb〉
-    const R_PUSHS = '/^\s*PUSHS[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*|bool@(true|false)|nil@nil)\s*/';
-    # POPS〈var〉
-    const R_POPS = '/^\s*POPS[\t\f ]+[GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*\s*/';
-    # ADD〈var〉〈symb1〉〈symb2〉
-    const R_ADD = '/^\s*ADD[\t\f ]+[GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)\s*/';
-    # SUB〈var〉〈symb1〉〈symb2〉
-    const R_SUB = '/^\s*SUB[\t\f ]+[GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)\s*/';
-    # MUL〈var〉〈symb1〉〈symb2〉
-    const R_MUL = '/^\s*MUL[\t\f ]+[GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)\s*/';
-    # IDIV〈var〉〈symb1〉〈symb2〉
-    const R_IDIV = '/^\s*IDIV[\t\f ]+[GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)\s*/';
-    # LT〈var〉〈symb1〉〈symb2〉
+
+    /// @var Defines regex for detecting instruction # PUSHS〈symb〉
+    const R_PUSHS = '/^\s*PUSHS.*/';
+
+    /// @var Defines regex for detecting instruction # POPS〈var〉
+    const R_POPS = '/^\s*POPS.*/';
+
+    /// @var Defines regex for detecting instruction # ADD〈var〉〈symb1〉〈symb2〉
+    const R_ADD = '/^\s*ADD.*/';
+
+    /// @var Defines regex for detecting instruction # SUB〈var〉〈symb1〉〈symb2〉
+    const R_SUB = '/^\s*SUB.*/';
+
+    /// @var Defines regex for detecting instruction # MUL〈var〉〈symb1〉〈symb2〉
+    const R_MUL = '/^\s*MUL.*/';
+
+    /// @var Defines regex for detecting instruction # IDIV〈var〉〈symb1〉〈symb2〉
+    const R_IDIV = '/^\s*IDIV.*/';
+
+    /// @var Defines regex for detecting instruction # LT〈var〉〈symb1〉〈symb2〉
     const R_LT = '/^\s*LT.*/';
-    # GT〈var〉〈symb1〉〈symb2〉
+
+    /// @var Defines regex for detecting instruction # GT〈var〉〈symb1〉〈symb2〉
     const R_GT = '/^\s*GT.*/';
-    # EQ〈var〉〈symb1〉〈symb2〉
+
+    /// @var Defines regex for detecting instruction # EQ〈var〉〈symb1〉〈symb2〉
     const R_EQ = '/^\s*EQ.*/';
-    const R_AND = '/^\s*AND.*/';                    # AND〈var〉〈symb1〉〈symb2〉
-    const R_OR = '/^\s*OR.*/';                      # OR〈var〉〈symb1〉〈symb2〉
-    const R_NOT = '/^\s*NOT.*/';                    # NOT〈var〉〈symb1〉〈symb2〉
-    const R_INT2CHAR = '/^\s*INT2CHAR.*/';          # INT2CHAR〈var〉〈symb〉
-    const R_STRI2INT = '/^\s*STRI2INT.*/';          # STRI2INT〈var〉〈symb1〉〈symb2〉
-    const R_READ = '/^\s*READ.*/';                  # READ〈var〉〈type〉
-    const R_WRITE = '/^\s*WRITE.*/';                # WRITE〈symb〉
-    const R_CONCAT = '/^\s*CONCAT.*/';              # CONCAT〈var〉〈symb1〉〈symb2〉
-    const R_STRLEN = '/^\s*STRLEN.*/';              # STRLEN〈var〉〈symb〉
-    const R_GETCHAR = '/^\s*GETCHAR.*/';            # GETCHAR〈var〉〈symb1〉〈symb2〉
-    const R_SETCHAR = '/^\s*SETCHAR.*/';            # SETCHAR〈var〉〈symb1〉〈symb2〉
-    const R_TYPE = '/^\s*TYPE.*/';                  # TYPE〈var〉〈symb〉
-    const R_LABEL = '/^\s*LABEL.*/';                # LABEL〈label〉
-    const R_JUMP = '/^\s*JUMP.*/';                  # JUMP〈label〉
-    const R_JUMPIFEQ = '/^\s*JUMPIFEQ.*/';          # JUMPIFEQ〈label〉〈symb1〉〈symb2〉
-    const R_JUMPIFNEQ = '/^\s*JUMPIFNEQ.*/';        # JUMPIFNEQ〈label〉〈symb1〉〈symb2〉
-    const R_EXIT = '/^\s*EXIT.*/';                  # EXIT〈symb〉
-    const R_DPRINT = '/^\s*DPRINT.*/';              # DPRINT〈symb〉
-    const R_BREAK = '/^\s*BREAK.*/';                # BREAK
 
-    const R_SPLIT = '/[\t\f ]+/';
+    /// @var Defines regex for detecting instruction # AND〈var〉〈symb1〉〈symb2〉
+    const R_AND = '/^\s*AND.*/';
 
-    #const R_WHITESPACE = '/[\t\f ]+/'
-    #const R_VAR = '/[GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*/'
-    #const R_SYMB = ([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*|bool@(true|false)|nil@nil);
-    #const R_LABEL;
-    #const R_SYMB_INT = ([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*);
+    /// @var Defines regex for detecting instruction # OR〈var〉〈symb1〉〈symb2〉
+    const R_OR = '/^\s*OR.*/';
 
+    /// @var Defines regex for detecting instruction # NOT〈var〉〈symb1〉〈symb2〉
+    const R_NOT = '/^\s*NOT.*/';
+
+    /// @var Defines regex for detecting instruction # INT2CHAR〈var〉〈symb〉
+    const R_INT2CHAR = '/^\s*INT2CHAR.*/';
+
+    /// @var Defines regex for detecting instruction # STRI2INT〈var〉〈symb1〉〈symb2〉
+    const R_STRI2INT = '/^\s*STRI2INT.*/';
+
+    /// @var Defines regex for detecting instruction # READ〈var〉〈type〉
+    const R_READ = '/^\s*READ.*/';
+
+    /// @var Defines regex for detecting instruction # WRITE〈symb〉
+    const R_WRITE = '/^\s*WRITE.*/';
+
+    /// @var Defines regex for detecting instruction # CONCAT〈var〉〈symb1〉〈symb2〉
+    const R_CONCAT = '/^\s*CONCAT.*/';
+
+    /// @var Defines regex for detecting instruction # STRLEN〈var〉〈symb〉
+    const R_STRLEN = '/^\s*STRLEN.*/';
+
+    /// @var Defines regex for detecting instruction # GETCHAR〈var〉〈symb1〉〈symb2〉
+    const R_GETCHAR = '/^\s*GETCHAR.*/';
+
+    /// @var Defines regex for detecting instruction # SETCHAR〈var〉〈symb1〉〈symb2〉
+    const R_SETCHAR = '/^\s*SETCHAR.*/';
+
+    /// @var Defines regex for detecting instruction # TYPE〈var〉〈symb〉
+    const R_TYPE = '/^\s*TYPE.*/';
+
+    /// @var Defines regex for detecting instruction # LABEL〈label〉
+    const R_LABEL = '/^\s*LABEL.*/';
+
+    /// @var Defines regex for detecting instruction # JUMP〈label〉
+    const R_JUMP = '/^\s*JUMP.*/';
+
+    /// @var Defines regex for detecting instruction # JUMPIFEQ〈label〉〈symb1〉〈symb2〉
+    const R_JUMPIFEQ = '/^\s*JUMPIFEQ.*/';
+
+    /// @var Defines regex for detecting instruction # JUMPIFNEQ〈label〉〈symb1〉〈symb2〉
+    const R_JUMPIFNEQ = '/^\s*JUMPIFNEQ.*/';
+
+    /// @var Defines regex for detecting instruction # EXIT〈symb〉
+    const R_EXIT = '/^\s*EXIT.*/';
+
+    /// @var Defines regex for detecting instruction # DPRINT〈symb〉
+    const R_DPRINT = '/^\s*DPRINT.*/';
+
+    /// @var Defines regex for detecting instruction # BREAK
+    const R_BREAK = '/^\s*BREAK.*/';
+
+
+    // ### Definitions of regular expressions detecting instruction operands.
+
+    /// @var Defines regex for matching whitespace between instructions and operands. Doesn't match newlines.
+    const R_WHITESPACE = '/[\t\f ]+/';
+
+    /// @var Defines regex for matching variable operands.
+    const R_VAR = '/[GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*/';
+
+    /// @var Defines regex for matching variable or literal operands.
+    const R_SYMB = '/([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*|bool@(true|false)|string@([^\\\s#]|\\[0-9][0-9][0-9])*|nil@nil)/';
+
+    /// @var Defines regex for matching variable or integer literal operands.
+    const R_SYMB_INT = '/([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)/';
+
+    /// @var Defines regex for matching label operands.
+    const R_LABELARG = '/[\t\f ]+[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*\s*/';
+
+
+    /// Analyzes a line of code detecting instructions and their operands,
+    /// checks whether they are syntacticly correct.
+    /// Syntacticaly correct constructions writes into an xml document.
+    /// @param $line  The line of code being analyzed.
+    /// @param $xmlW  The XML Writer object used to write the xml document.
     function analyze_instruction($line, $xmlW) {
       if (preg_match_all(self::R_MOVE, $line, $matches, PREG_SET_ORDER, 0 )) {
-        $splitarray = preg_split(self::R_SPLIT, $line);
-  			echo("FOUND MOVE\n");
-  		} elseif (preg_match_all(self::R_CREATEFRAME, $line, $matches, PREG_SET_ORDER, 0 )) {
-        echo("FOUND CREATEFRAME\n");
-      } elseif (preg_match_all(self::R_PUSHFRAME, $line, $matches, PREG_SET_ORDER, 0 )) {
-        echo("FOUND PUSHFRAME\n");
-      } elseif (preg_match_all(self::R_POPFRAME, $line, $matches, PREG_SET_ORDER, 0 )) {
-        echo("FOUND DEFVAR\n");
-      } elseif (preg_match_all(self::R_DEFVAR, $line, $matches, PREG_SET_ORDER, 0 )) {
-
-      }
-    }
-
-    function check_var($line) {
-
-    }
-
-    function check_symb($line) {
-
-    }
-
-    function check_label($line) {
-
-    }
-
-    function check_symb_int($line) {
-
+        $splitarray = preg_split(self::R_WHITESPACE, $line);
+        if (preg_match_all(self::R_VAR, $splitarray[1], $matches, PREG_SET_ORDER, 0) && preg_match_all(self::R_SYMB, $splitarray[2], $matches, PREG_SET_ORDER, 0))
+  			   echo("FOUND MOVE\n");
+  		}
     }
 
     function do_the_thing($stdin) {
