@@ -136,16 +136,48 @@
     /// @param $line  The line of code being analyzed.
     /// @param $xmlW  The XML Writer object used to write the xml document.
     function analyze_instruction($line, $xmlW) {
-      if (preg_match_all(self::R_MOVE, $line)) {
-        $splitarray = preg_split(self::R_WHITESPACE, $line);
+      // Splits the line into an array of tokens.
+      $tokens = preg_split(self::R_WHITESPACE, $line);
+      $token_count = count($token_count);
 
-        if (preg_match_all(self::R_VAR, $splitarray[1]) && preg_match_all(self::R_SYMB, $splitarray[2]) && (count($splitarray) == 3 || preg_match_all(self::R_COMMENT, $splitarray[3])))
+      // Analyzes the line itself and subsequently all the tokens.
+      if (preg_match_all(self::R_MOVE, $line)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB, $tokens[2]) && ($token_count == 3 || preg_match_all(self::R_COMMENT, $tokens[3])))
+  			   echo("FOUND MOVE\n");
+        else exit(22);
+      } elseif (preg_match_all(self::R_CREATEFRAME, $line, $matches, PREG_SET_ORDER, 0)) {
+        if ($token_count == 1 || preg_match_all(self::R_COMMENT, $tokens[1]))
+  			   echo("FOUND CREATEFRAME\n");
+        else exit(22);
+      } elseif (preg_match_all(self::R_PUSHFRAME, $line, $matches, PREG_SET_ORDER, 0)) {
+        if ($token_count == 1 || preg_match_all(self::R_COMMENT, $tokens[1]))
+  			   echo("FOUND PUSHFRAME\n");
+        else exit(22);
+      } elseif (preg_match_all(self::R_POPFRAME, $line, $matches, PREG_SET_ORDER, 0)) {
+        if ($token_count == 1 || preg_match_all(self::R_COMMENT, $tokens[1]))
+  			   echo("FOUND POPFRAME\n");
+        else exit(22);
+      } elseif (preg_match_all(self::R_DEFVAR, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && ($token_count == 2 || preg_match_all(self::R_COMMENT, $tokens[2])))
+  			   echo("FOUND MOVE\n");
+        else exit(22);
+      } elseif (preg_match_all(self::R_CALL, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_LABELARG, $tokens[1]) && ($token_count == 2 || preg_match_all(self::R_COMMENT, $tokens[2])))
+  			   echo("FOUND CALL\n");
+        else exit(22);
+      } elseif (preg_match_all(self::R_RETURN, $line, $matches, PREG_SET_ORDER, 0)) {
+        if ($token_count == 1 || preg_match_all(self::R_COMMENT, $tokens[1]))
+  			   echo("FOUND RETURN\n");
+        else exit(22);
+      } elseif (preg_match_all(self::R_PUSHS, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_SYMB, $tokens[1]) && ($token_count == 2 || preg_match_all(self::R_COMMENT, $tokens[2])))
+  			   echo("FOUND MOVE\n");
+        else exit(22);
+      } elseif (preg_match_all(self::R_POPS, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && ($token_count == 2 || preg_match_all(self::R_COMMENT, $tokens[2])))
   			   echo("FOUND MOVE\n");
         else exit(22);
       }
-  		//} elseif (preg_match_all(self::R_PUSHFRAME, $line, $matches, PREG_SET_ORDER, 0)) {
-        // code...
-      //}
     }
 
     function do_the_thing($stdin) {
