@@ -20,12 +20,18 @@
     const R_POPS = '/^\s*POPS[\t\f ]+[GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*\s*/';
     # ADD〈var〉〈symb1〉〈symb2〉
     const R_ADD = '/^\s*ADD[\t\f ]+[GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)\s*/';
-    const R_SUB = '/^\s*SUB.*/';                    # SUB〈var〉〈symb1〉〈symb2〉
-    const R_MUL = '/^\s*MUL.*/';                    # MUL〈var〉〈symb1〉〈symb2〉
-    const R_IDIV = '/^\s*IDIV.*/';                  # IDIV〈var〉〈symb1〉〈symb2〉
-    const R_LT = '/^\s*LT.*/';                      # LT〈var〉〈symb1〉〈symb2〉
-    const R_GT = '/^\s*GT.*/';                      # GT〈var〉〈symb1〉〈symb2〉
-    const R_EQ = '/^\s*EQ.*/';                      # EQ〈var〉〈symb1〉〈symb2〉
+    # SUB〈var〉〈symb1〉〈symb2〉
+    const R_SUB = '/^\s*SUB[\t\f ]+[GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)\s*/';
+    # MUL〈var〉〈symb1〉〈symb2〉
+    const R_MUL = '/^\s*MUL[\t\f ]+[GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)\s*/';
+    # IDIV〈var〉〈symb1〉〈symb2〉
+    const R_IDIV = '/^\s*IDIV[\t\f ]+[GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)[\t\f ]+([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)\s*/';
+    # LT〈var〉〈symb1〉〈symb2〉
+    const R_LT = '/^\s*LT.*/';
+    # GT〈var〉〈symb1〉〈symb2〉
+    const R_GT = '/^\s*GT.*/';
+    # EQ〈var〉〈symb1〉〈symb2〉
+    const R_EQ = '/^\s*EQ.*/';
     const R_AND = '/^\s*AND.*/';                    # AND〈var〉〈symb1〉〈symb2〉
     const R_OR = '/^\s*OR.*/';                      # OR〈var〉〈symb1〉〈symb2〉
     const R_NOT = '/^\s*NOT.*/';                    # NOT〈var〉〈symb1〉〈symb2〉
