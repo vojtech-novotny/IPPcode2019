@@ -1,5 +1,5 @@
 <?php
-  class lexicalAnalyzator {
+  class Lexical_Analyzer {
 
     // ### Definitions of regular expression detecting instruction OP Codes.
 
@@ -180,15 +180,110 @@
       }
     }
 
-    function do_the_thing($stdin) {
+    function do_the_thing($stdin, $xmlm) {
       $i = 0;
 
       while ($i < 15) {
         echo $i;
         $line = fgets($stdin);
-        self::analyze_instruction($line, $xmlW);
+        self::analyze_instruction($line, $xmlm);
         $i = $i + 1;
       }
+    }
+  }
+
+
+  class XML_Manager {
+    const R_VAR = '/(LF|GF|TF)@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*/';
+    const R_INT = '/int@(+|-)?[1-9][0-9]*/';
+    const R_BOOL = '/bool@(true|false)/';
+    const R_STRING = '/string@([^\\\s#]|\\[0-9][0-9][0-9])/';
+    const R_NIL = '/nil@nil/';
+    const R_ARGSPLIT = '/@/';
+
+    $instruction_count = 1;
+
+    public $writer = new XMLWriter();
+
+    /// Initializes XML writer memory.
+    /// Starts the document and main element 'program'.
+    function init() {
+      $writer->openMemory();
+      $writer->setIndent(1);
+      $writer->startDocument();
+      $writer->startElement("Program");
+    }
+
+    /// Writes a single instruction and all of it's parameters into XML writer memory.
+    /// @param $OPcode    OPcode of the instruction.
+    /// @param $arg1      String optionally containing IPPcode19 representation of the first argument.
+    /// @param $arg2      String optionally containing IPPcode19 representation of the second argument.
+    /// @param $arg3      String optionally containing IPPcode19 representation of the third argument.
+    function write_instruction($OPcode, $arg1 = null, $arg2 = null, $arg3 = null) {
+      $writer->startElement('instruction');
+
+      $writer->startAttribute('order');
+      $writer->text($instruction_count);
+      $writer->endAttribute();
+      $instruction_count++;
+
+      $writer->startAttribute('opcode');
+      $writer->text($OPcode);
+      $writer->endAttribute();
+
+      if (write_argument($arg1, 'arg1') == 1) {
+        $writer->endElement();
+        return;
+      } elseif (write_argument($arg2, 'arg2') == 1) {
+        $writer->endElement();
+        return;
+      } elseif (write_argument($arg3, 'arg3') == 1) {
+        $writer->endElement();
+        return;
+      } else {
+        $writer->endElement();
+        return;
+      }
+    }
+
+    #PRIVATE
+    /// Writes a single argument XML element.
+    /// @param $arg       String containing IPPcode19 representation of the argument.
+    /// @param $arg_name  String containing either 'arg1', 'arg2' or 'arg3',
+    ///                   depending on the number of the argument
+    /// @return           1 - if $arg is null.
+    ///                   0 - if $arg is successfully used.
+    function write_argument($arg, $arg_name) {
+      if ($arg == null)
+        return 1;
+      else {
+        $arg_attributes = preg_split(self::R_ARGSPLIT, $arg);
+        $writer->startElement($arg_name);
+        $writer->startAttribute('type');
+
+        if (preg_match_all(self::R_VAR, $arg))
+          $writer->text('var');
+        else
+          $writer->text($arg_attributes[0])
+
+        $writer->endAttribute();
+        $writer->text($arg_attributes[1]);
+        $writer->endElement();
+        return 0;
+      }
+    }
+
+    /// Ends 'program' element and ends the XML document, finalizing it.
+    /// Has to be called before print()
+    function finalize() {
+      $xmlW->endElement();
+      $xmlW->endDocument();
+    }
+
+    /// Prints out contents of XML writer memory on STDOUT.
+    /// finalize() has to be called before calling print()
+    function print() {
+      echo $writer->outputMemory();
     }
   }
 
@@ -196,19 +291,17 @@
   ## START OF SCRIPT ##
   #####################
 
-  $lex = new lexicalAnalyzator();
+// program setup
+  $lex = new Lexical_Analyzer();
   $stdin = fopen('php://stdin', 'r');
-  $xmlW = new XMLWriter();
-  $xmlW->openMemory();
-  $xmlW->setIndent(1);
-  $xmlW->startDocument();
-  $xmlW->startElement("Program");
+  $xmlm = new XML_Manager();
+  $xmlm->init();
 
-  $lex->do_the_thing($stdin);
-  #$lex->echolines();
+// program main
+  $lex->do_the_thing($stdin, $xmlm);
 
-  $xmlW->endElement();
-  $xmlW->endDocument();
-  #echo $xmlW->outputMemory();
+// program output
+  $xmlm->finalize();
+  $xmlm->print();
   fclose($stdin);
 ?>
