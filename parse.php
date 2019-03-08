@@ -194,24 +194,33 @@
 
 
   class XML_Manager {
-    const R_VAR = '/(LF|GF|TF)@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*/';
-    const R_INT = '/int@(+|-)?[1-9][0-9]*/';
-    const R_BOOL = '/bool@(true|false)/';
-    const R_STRING = '/string@([^\\\s#]|\\[0-9][0-9][0-9])/';
-    const R_NIL = '/nil@nil/';
-    const R_ARGSPLIT = '/@/';
+    private const ERR_NOTINIT = 'Error - XML Writer is not initalized!';
+    private const ERR_REINIT = 'Error - XML Writer is already initialized';
 
-    $instruction_count = 1;
+    private const R_VAR = '/(LF|GF|TF)@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*/';
+    private const R_INT = '/int@(+|-)?[1-9][0-9]*/';
+    private const R_BOOL = '/bool@(true|false)/';
+    private const R_STRING = '/string@([^\\\s#]|\\[0-9][0-9][0-9])/';
+    private const R_NIL = '/nil@nil/';
+    private const R_ARGSPLIT = '/@/';
 
-    public $writer = new XMLWriter();
+    private $instruction_count = 1;
+
+    private $writer = null;
 
     /// Initializes XML writer memory.
     /// Starts the document and main element 'program'.
     function init() {
-      $writer->openMemory();
-      $writer->setIndent(1);
-      $writer->startDocument();
-      $writer->startElement("Program");
+      if ($this->writer == null) {
+        $this->writer = new XMLWriter();
+        $this->writer->openMemory();
+        $this->writer->setIndent(1);
+        $this->writer->startDocument();
+        $this->writer->startElement("Program");
+      } else {
+        fwrite(STDERR, ERR_REINIT);
+        exit (-1);
+      }
     }
 
     /// Writes a single instruction and all of it's parameters into XML writer memory.
@@ -220,55 +229,64 @@
     /// @param $arg2      String optionally containing IPPcode19 representation of the second argument.
     /// @param $arg3      String optionally containing IPPcode19 representation of the third argument.
     function write_instruction($OPcode, $arg1 = null, $arg2 = null, $arg3 = null) {
-      $writer->startElement('instruction');
+      if ($this->writer == null) {
+        fwrite(STDERR, ERR_NOTINIT);
+        exit (-1);
+      }
 
-      $writer->startAttribute('order');
-      $writer->text($instruction_count);
-      $writer->endAttribute();
-      $instruction_count++;
+      $this->writer->startElement('instruction');
 
-      $writer->startAttribute('opcode');
-      $writer->text($OPcode);
-      $writer->endAttribute();
+      $this->writer->startAttribute('order');
+      $this->writer->text($this->instruction_count);
+      $this->writer->endAttribute();
+      $this->instruction_count++;
+
+      $this->writer->startAttribute('opcode');
+      $this->writer->text($OPcode);
+      $this->writer->endAttribute();
 
       if (write_argument($arg1, 'arg1') == 1) {
-        $writer->endElement();
+        $this->writer->endElement();
         return;
       } elseif (write_argument($arg2, 'arg2') == 1) {
-        $writer->endElement();
+        $this->writer->endElement();
         return;
       } elseif (write_argument($arg3, 'arg3') == 1) {
-        $writer->endElement();
+        $this->writer->endElement();
         return;
       } else {
-        $writer->endElement();
+        $this->writer->endElement();
         return;
       }
     }
 
-    #PRIVATE
     /// Writes a single argument XML element.
     /// @param $arg       String containing IPPcode19 representation of the argument.
     /// @param $arg_name  String containing either 'arg1', 'arg2' or 'arg3',
     ///                   depending on the number of the argument
     /// @return           1 - if $arg is null.
     ///                   0 - if $arg is successfully used.
-    function write_argument($arg, $arg_name) {
+    private function write_argument($arg, $arg_name) {
+      if ($this->writer == null) {
+        fwrite(STDERR, ERR_NOTINIT);
+        exit(-1);
+      }
+
       if ($arg == null)
         return 1;
       else {
         $arg_attributes = preg_split(self::R_ARGSPLIT, $arg);
-        $writer->startElement($arg_name);
-        $writer->startAttribute('type');
+        $this->writer->startElement($arg_name);
+        $this->writer->startAttribute('type');
 
         if (preg_match_all(self::R_VAR, $arg))
-          $writer->text('var');
+          $this->writer->text('var');
         else
-          $writer->text($arg_attributes[0])
+          $this->writer->text($arg_attributes[0])
 
-        $writer->endAttribute();
-        $writer->text($arg_attributes[1]);
-        $writer->endElement();
+        $this->writer->endAttribute();
+        $this->writer->text($arg_attributes[1]);
+        $this->writer->endElement();
         return 0;
       }
     }
@@ -276,6 +294,11 @@
     /// Ends 'program' element and ends the XML document, finalizing it.
     /// Has to be called before print()
     function finalize() {
+      if ($this->writer == null) {
+        fwrite(STDERR, ERR_NOTINIT);
+        exit(-1);
+      }
+
       $xmlW->endElement();
       $xmlW->endDocument();
     }
@@ -283,7 +306,11 @@
     /// Prints out contents of XML writer memory on STDOUT.
     /// finalize() has to be called before calling print()
     function print() {
-      echo $writer->outputMemory();
+      if ($this->writer == null) {
+        fwrite(STDERR, ERR_NOTINIT);
+      }
+
+      echo $this->writer->outputMemory();
     }
   }
 
