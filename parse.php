@@ -204,11 +204,15 @@
     private const R_NIL = '/nil@nil/';
     private const R_ARGSPLIT = '/@/';
 
-    private $stderr = fopen('php://stderr', 'w');
+    private $errf = null;
 
     private $instruction_count = 1;
 
     private $writer = null;
+
+    function __construct() {
+      $this->errf = fopen('php://stderr', 'w');
+    }
 
     /// Initializes XML writer memory.
     /// Starts the document and main element 'program'.
@@ -223,7 +227,7 @@
         $this->writer->text('IPPcode19');
         $this->writer->endAttribute();
       } else {
-        fwrite($stderr, ERR_REINIT);
+        fwrite($this->errf, ERR_REINIT);
         exit (-1);
       }
     }
@@ -235,7 +239,7 @@
     /// @param $arg3      String optionally containing IPPcode19 representation of the third argument.
     function write_instruction($OPcode, $arg1 = null, $arg2 = null, $arg3 = null) {
       if ($this->writer == null) {
-        fwrite($stderr, ERR_NOTINIT);
+        fwrite($this->errf, ERR_NOTINIT);
         exit (-1);
       }
 
@@ -273,7 +277,7 @@
     ///                   0 - if $arg is successfully used.
     private function write_argument($arg, $arg_name) {
       if ($this->writer == null) {
-        fwrite($stderr, ERR_NOTINIT);
+        fwrite($this->errf, ERR_NOTINIT);
         exit(-1);
       }
 
@@ -300,7 +304,7 @@
     /// Has to be called before print()
     function finalize() {
       if ($this->writer == null) {
-        fwrite($stderr, ERR_NOTINIT);
+        fwrite($this->errf, ERR_NOTINIT);
         exit(-1);
       }
 
@@ -312,7 +316,8 @@
     /// finalize() has to be called before calling print()
     function print() {
       if ($this->writer == null) {
-        fwrite($stderr, ERR_NOTINIT);
+        fwrite($this->errf, ERR_NOTINIT);
+        exit(-1);
       }
 
       $this->writer->flush();
