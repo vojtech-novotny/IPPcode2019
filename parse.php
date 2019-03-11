@@ -213,10 +213,13 @@
     function init() {
       if ($this->writer == null) {
         $this->writer = new XMLWriter();
-        $this->writer->openMemory();
+        $this->writer->openURI('php://output');
         $this->writer->setIndent(1);
         $this->writer->startDocument();
-        $this->writer->startElement("Program");
+        $this->writer->startElement('program');
+        $this->writer->startAttribute('language');
+        $this->writer->text('IPPcode19');
+        $this->writer->endAttribute();
       } else {
         fwrite(STDERR, ERR_REINIT);
         exit (-1);
@@ -310,7 +313,7 @@
         fwrite(STDERR, ERR_NOTINIT);
       }
 
-      echo $this->writer->outputMemory();
+      $this->writer->flush();
     }
   }
 
@@ -328,7 +331,7 @@
   $lex->do_the_thing($stdin, $xmlm);
 
 // program output
+  fclose($stdin);
   $xmlm->finalize();
   $xmlm->print();
-  fclose($stdin);
 ?>
