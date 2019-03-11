@@ -138,7 +138,7 @@
     function analyze_instruction($line, $xmlW) {
       // Splits the line into an array of tokens.
       $tokens = preg_split(self::R_WHITESPACE, $line);
-      $token_count = count($token_count);
+      $token_count = count($tokens);
 
       // Analyzes the line itself and subsequently all the tokens.
       if (preg_match_all(self::R_MOVE, $line)) {
