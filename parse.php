@@ -3,6 +3,9 @@
 
     // ### Definitions of regular expression detecting instruction OP Codes.
 
+    /// @var Defines regex for matching empty lines (or with comments).
+    const R_EMPTY = '/^[\t\f ]*(\#.*)?$/';
+
     /// @var Defines regex for detecting instruction # MOVE〈var〉〈symb〉
     const R_MOVE = '/^\s*MOVE.*/';
 
@@ -123,69 +126,181 @@
     /// @var Defines regex for matching variable or integer literal operands.
     const R_SYMB_INT = '/([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)/';
 
+    /// @var Defines regex for matching variable or string literal operands.
+    const R_SYMB_STRING = '/([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|string@([^\\\s#]|\\[0-9][0-9][0-9])*)/';
+
     /// @var Defines regex for matching label operands.
     const R_LABELARG = '/[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*\s*/';
 
+    /// @var Defines regex for matching type operands.
+    const R_TYPEARG = '/(int|bool|string|nil)\s*/';
+
     /// @var Defines regex for matching comments.
     const R_COMMENT = '/\#.*/';
-
 
     /// Analyzes a line of code detecting instructions and their operands,
     /// checks whether they are syntacticly correct.
     /// Syntacticaly correct constructions writes into an xml document.
     /// @param $line  The line of code being analyzed.
     /// @param $xmlW  The XML Writer object used to write the xml document.
-    function analyze_instruction($line, $xmlW) {
+    function analyze_instruction($line, $xmlm) {
       // Splits the line into an array of tokens.
       $tokens = preg_split(self::R_WHITESPACE, $line);
       $token_count = count($tokens);
 
       // Analyzes the line itself and subsequently all the tokens.
-      if (preg_match_all(self::R_MOVE, $line)) {
+      if (preg_match_all(self::R_EMPTY, $line)) {
+        // do nothing
+        return;
+      } elseif (preg_match_all(self::R_MOVE, $line)) {
         if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB, $tokens[2]) && ($token_count == 3 || preg_match_all(self::R_COMMENT, $tokens[3])))
-  			   echo("FOUND MOVE\n");
+  			   $xmlm->write_instruction('MOVE', $tokens[1], $tokens[2]);
         else exit(22);
       } elseif (preg_match_all(self::R_CREATEFRAME, $line, $matches, PREG_SET_ORDER, 0)) {
         if ($token_count == 1 || preg_match_all(self::R_COMMENT, $tokens[1]))
-  			   echo("FOUND CREATEFRAME\n");
+  			   $xmlm->write_instruction('CREATEFRAME');
         else exit(22);
       } elseif (preg_match_all(self::R_PUSHFRAME, $line, $matches, PREG_SET_ORDER, 0)) {
         if ($token_count == 1 || preg_match_all(self::R_COMMENT, $tokens[1]))
-  			   echo("FOUND PUSHFRAME\n");
+  			   $xmlm->write_instruction('PUSHFRAME');
         else exit(22);
       } elseif (preg_match_all(self::R_POPFRAME, $line, $matches, PREG_SET_ORDER, 0)) {
         if ($token_count == 1 || preg_match_all(self::R_COMMENT, $tokens[1]))
-  			   echo("FOUND POPFRAME\n");
+  			   $xmlm->write_instruction('POPFRAME');
         else exit(22);
       } elseif (preg_match_all(self::R_DEFVAR, $line, $matches, PREG_SET_ORDER, 0)) {
         if (preg_match_all(self::R_VAR, $tokens[1]) && ($token_count == 2 || preg_match_all(self::R_COMMENT, $tokens[2])))
-  			   echo("FOUND MOVE\n");
+  			   $xmlm->write_instruction('DEFVAR', $tokens[1]);
         else exit(22);
       } elseif (preg_match_all(self::R_CALL, $line, $matches, PREG_SET_ORDER, 0)) {
         if (preg_match_all(self::R_LABELARG, $tokens[1]) && ($token_count == 2 || preg_match_all(self::R_COMMENT, $tokens[2])))
-  			   echo("FOUND CALL\n");
+  			   $xmlm->write_instruction('CALL', $tokens[1]);
         else exit(22);
       } elseif (preg_match_all(self::R_RETURN, $line, $matches, PREG_SET_ORDER, 0)) {
         if ($token_count == 1 || preg_match_all(self::R_COMMENT, $tokens[1]))
-  			   echo("FOUND RETURN\n");
+  			   $xmlm->write_instruction('RETURN');
         else exit(22);
       } elseif (preg_match_all(self::R_PUSHS, $line, $matches, PREG_SET_ORDER, 0)) {
         if (preg_match_all(self::R_SYMB, $tokens[1]) && ($token_count == 2 || preg_match_all(self::R_COMMENT, $tokens[2])))
-  			   echo("FOUND MOVE\n");
+  			   $xmlm->write_instruction('PUSHS', $tokens[1]);
         else exit(22);
       } elseif (preg_match_all(self::R_POPS, $line, $matches, PREG_SET_ORDER, 0)) {
         if (preg_match_all(self::R_VAR, $tokens[1]) && ($token_count == 2 || preg_match_all(self::R_COMMENT, $tokens[2])))
-  			   echo("FOUND MOVE\n");
+  			   $xmlm->write_instruction('POPS', $tokens[1]);
         else exit(22);
-      }
+      } elseif (preg_match_all(self::R_ADD, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB_INT, $tokens[2]) && preg_match_all(self::R_SYMB_INT, $tokens[3]) && ($token_count == 4 || preg_match_all(self::R_COMMENT, $tokens[4])))
+  			   $xmlm->write_instruction('ADD', $tokens[1], $tokens[2], $tokens[3]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_SUB, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB_INT, $tokens[2]) && preg_match_all(self::R_SYMB_INT, $tokens[3]) && ($token_count == 4 || preg_match_all(self::R_COMMENT, $tokens[4])))
+  			   $xmlm->write_instruction('SUB', $tokens[1], $tokens[2], $tokens[3]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_MUL, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB_INT, $tokens[2]) && preg_match_all(self::R_SYMB_INT, $tokens[3]) && ($token_count == 4 || preg_match_all(self::R_COMMENT, $tokens[4])))
+  			   $xmlm->write_instruction('MUL', $tokens[1], $tokens[2], $tokens[3]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_IDIV, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB_INT, $tokens[2]) && preg_match_all(self::R_SYMB_INT, $tokens[3]) && ($token_count == 4 || preg_match_all(self::R_COMMENT, $tokens[4])))
+  			   $xmlm->write_instruction('IDIV', $tokens[1], $tokens[2], $tokens[3]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_LT, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB, $tokens[2]) && preg_match_all(self::R_SYMB, $tokens[3]) && ($token_count == 4 || preg_match_all(self::R_COMMENT, $tokens[4])))
+  			   $xmlm->write_instruction('LT', $tokens[1], $tokens[2], $tokens[3]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_GT, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB, $tokens[2]) && preg_match_all(self::R_SYMB, $tokens[3]) && ($token_count == 4 || preg_match_all(self::R_COMMENT, $tokens[4])))
+  			   $xmlm->write_instruction('GT', $tokens[1], $tokens[2], $tokens[3]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_EQ, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB, $tokens[2]) && preg_match_all(self::R_SYMB, $tokens[3]) && ($token_count == 4 || preg_match_all(self::R_COMMENT, $tokens[4])))
+  			   $xmlm->write_instruction('EQ', $tokens[1], $tokens[2], $tokens[3]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_AND, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB, $tokens[2]) && preg_match_all(self::R_SYMB, $tokens[3]) && ($token_count == 4 || preg_match_all(self::R_COMMENT, $tokens[4])))
+  			   $xmlm->write_instruction('AND', $tokens[1], $tokens[2], $tokens[3]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_OR, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB, $tokens[2]) && preg_match_all(self::R_SYMB, $tokens[3]) && ($token_count == 4 || preg_match_all(self::R_COMMENT, $tokens[4])))
+  			   $xmlm->write_instruction('OR', $tokens[1], $tokens[2], $tokens[3]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_NOT, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB, $tokens[2]) && ($token_count == 3 || preg_match_all(self::R_COMMENT, $tokens[3])))
+  			   $xmlm->write_instruction('NOT', $tokens[1], $tokens[2]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_INT2CHAR, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB_INT, $tokens[2]) && ($token_count == 3 || preg_match_all(self::R_COMMENT, $tokens[3])))
+  			   $xmlm->write_instruction('INT2CHAR', $tokens[1], $tokens[2]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_STRI2INT, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB_STRING, $tokens[2]) && preg_match_all(self::R_SYMB_INT, $tokens[3]) && ($token_count == 4 || preg_match_all(self::R_COMMENT, $tokens[4])))
+  			   $xmlm->write_instruction('STRI2INT', $tokens[1], $tokens[2], $tokens[3]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_TYPE, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_TYPEARG, $tokens[2]) && ($token_count == 3 || preg_match_all(self::R_COMMENT, $tokens[3])))
+  			   $xmlm->write_instruction('TYPE', $tokens[1], $tokens[2]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_WRITE, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_SYMB, $tokens[1]) && ($token_count == 2 || preg_match_all(self::R_COMMENT, $tokens[2])))
+  			   $xmlm->write_instruction('WRITE', $tokens[1]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_CONCAT, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB_STRING, $tokens[2]) && preg_match_all(self::R_SYMB_STRING, $tokens[3]) && ($token_count == 4 || preg_match_all(self::R_COMMENT, $tokens[4])))
+  			   $xmlm->write_instruction('CONCAT', $tokens[1], $tokens[2], $tokens[3]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_STRLEN, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB_STRING, $tokens[2]) && ($token_count == 3 || preg_match_all(self::R_COMMENT, $tokens[3])))
+  			   $xmlm->write_instruction('STRLEN', $tokens[1], $tokens[2]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_GETCHAR, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB_STRING, $tokens[2]) && preg_match_all(self::R_SYMB_INT, $tokens[3]) && ($token_count == 4 || preg_match_all(self::R_COMMENT, $tokens[4])))
+  			   $xmlm->write_instruction('GETCHAR', $tokens[1], $tokens[2], $tokens[3]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_SETCHAR, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB_INT, $tokens[2]) && preg_match_all(self::R_SYMB_STRING, $tokens[3]) && ($token_count == 4 || preg_match_all(self::R_COMMENT, $tokens[4])))
+  			   $xmlm->write_instruction('SETCHAR', $tokens[1], $tokens[2], $tokens[3]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_TYPE, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB) && ($token_count == 3 || preg_match_all(self::R_COMMENT, $tokens[3])))
+  			   $xmlm->write_instruction('TYPE', $tokens[1], $tokens[2]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_LABEL, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_LABELARG, $tokens[1]) && ($token_count == 2 || preg_match_all(self::R_COMMENT, $tokens[2])))
+  			   $xmlm->write_instruction('LABEL', $tokens[1]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_JUMP, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_LABELARG, $tokens[1]) && ($token_count == 2 || preg_match_all(self::R_COMMENT, $tokens[2])))
+  			   $xmlm->write_instruction('JUMP', $tokens[1]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_JUMPIFEQ, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_LABELARG, $tokens[1]) && preg_match_all(self::R_SYMB, $tokens[2]) && preg_match_all(self::R_SYMB, $tokens[3]) && ($token_count == 4 || preg_match_all(self::R_COMMENT, $tokens[4])))
+  			   $xmlm->write_instruction('JUMPIFEQ', $tokens[1], $tokens[2], $tokens[3]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_JUMPIFNEQ, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_LABELARG, $tokens[1]) && preg_match_all(self::R_SYMB, $tokens[2]) && preg_match_all(self::R_SYMB, $tokens[3]) && ($token_count == 4 || preg_match_all(self::R_COMMENT, $tokens[4])))
+  			   $xmlm->write_instruction('JUMPIFNEQ', $tokens[1], $tokens[2], $tokens[3]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_EXIT, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_SYMB, $tokens[1]) && ($token_count == 2 || preg_match_all(self::R_COMMENT, $tokens[2])))
+  			   $xmlm->write_instruction('EXIT', $tokens[1]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_DPRINT, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (preg_match_all(self::R_SYMB, $tokens[1]) && ($token_count == 2 || preg_match_all(self::R_COMMENT, $tokens[2])))
+  			   $xmlm->write_instruction('DPRINT', $tokens[1]);
+        else exit(22);
+      } elseif (preg_match_all(self::R_BREAK, $line, $matches, PREG_SET_ORDER, 0)) {
+        if (($token_count == 1 || preg_match_all(self::R_COMMENT, $tokens[1])))
+  			   $xmlm->write_instruction('BREAK');
+        else exit(22);
+      } else exit(22);
     }
 
     function do_the_thing($stdin, $xmlm) {
       $i = 0;
 
       while ($i < 15) {
-        echo $i;
-        $line = fgets($stdin);
+        echo $i . ' ';
+        $line = trim(fgets($stdin));
         self::analyze_instruction($line, $xmlm);
         $i = $i + 1;
       }
@@ -254,13 +369,13 @@
       $this->writer->text($OPcode);
       $this->writer->endAttribute();
 
-      if (write_argument($arg1, 'arg1') == 1) {
+      if ($this->write_argument($arg1, 'arg1') == 1) {
         $this->writer->endElement();
         return;
-      } elseif (write_argument($arg2, 'arg2') == 1) {
+      } elseif ($this->write_argument($arg2, 'arg2') == 1) {
         $this->writer->endElement();
         return;
-      } elseif (write_argument($arg3, 'arg3') == 1) {
+      } elseif ($this->write_argument($arg3, 'arg3') == 1) {
         $this->writer->endElement();
         return;
       } else {
@@ -308,8 +423,8 @@
         exit(-1);
       }
 
-      $xmlW->endElement();
-      $xmlW->endDocument();
+      $this->writer->endElement();
+      $this->writer->endDocument();
     }
 
     /// Prints out contents of XML writer memory on STDOUT.
@@ -338,7 +453,9 @@
   $lex->do_the_thing($stdin, $xmlm);
 
 // program output
-  fclose($stdin);
   $xmlm->finalize();
   $xmlm->print();
+
+// stalling the program after finish
+  fgets($stdin);
 ?>
