@@ -298,7 +298,10 @@
       } else exit(22);
     }
 
-    function do_the_thing($stdin, $xmlm) {
+    /// Analyzes input from file line by line and encodes it in XML.
+    /// @param $stdin Input file.
+    /// @param $xmlm  XML manager used to write the XML code.
+    function main_loop($stdin, $xmlm) {
       $i = 0;
 
       $line = '';
@@ -470,7 +473,7 @@
   $xmlm->init();
 
 // program main
-  $lex->do_the_thing($stdin, $xmlm);
+  $lex->main_loop($stdin, $xmlm);
 
 // program output
   $xmlm->finalize();
