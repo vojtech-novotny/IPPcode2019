@@ -7,7 +7,7 @@ MOVE LF@x string@lol
 MOVE LF@x bool@true
 MOVE LF@x bool@false
 MOVE TF@y GF@z
-MOVE nil@nil
+MOVE LF@y nil@nil
 CREATEFRAME
 PUSHFRAME
 POPFRAME
@@ -92,10 +92,10 @@ DEFVAR GF@counter # lorem ipsum
 MOVE GF@counter string@ #inicializace proměnné na prázdný řetězec
 #Jednoduchá iterace, dokud nebude splněna zadaná podmínka
 LABEL while #lorem ipsum
-JUMPIFEQ end GF@counter string@aaa# Lorem ipsum
+JUMPIFEQ end GF@counter string@aaa # Lorem ipsum
 WRITE string@counter\032obsahuje\032 # Lorem ipsum
-WRITE GF@counter# Lorem ipsum
+WRITE GF@counter # Lorem ipsum
 WRITE string@\010 # Lorem ipsum
 CONCAT GF@counter GF@counter string@a # Lorem ipsum
-JUMP while# Lorem ipsum
+JUMP while # Lorem ipsum
 LABEL end # Lorem ipsum
