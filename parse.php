@@ -239,9 +239,9 @@
         if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB_STRING, $tokens[2]) && preg_match_all(self::R_SYMB_INT, $tokens[3]) && ($token_count == 4 || preg_match_all(self::R_COMMENT, $tokens[4])))
   			   $xmlm->write_instruction('STRI2INT', $tokens[1], $tokens[2], $tokens[3]);
         else exit(23);
-      } elseif (preg_match_all(self::R_TYPE, $line)) {
+      } elseif (preg_match_all(self::R_READ, $line)) {
         if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_TYPEARG, $tokens[2]) && ($token_count == 3 || preg_match_all(self::R_COMMENT, $tokens[3])))
-  			   $xmlm->write_instruction('TYPE', $tokens[1], $tokens[2]);
+  			   $xmlm->write_instruction('READ', $tokens[1]);
         else exit(23);
       } elseif (preg_match_all(self::R_WRITE, $line)) {
         if (preg_match_all(self::R_SYMB, $tokens[1]) && ($token_count == 2 || preg_match_all(self::R_COMMENT, $tokens[2])))
@@ -303,7 +303,8 @@
     /// @param $xmlm  XML manager used to write the XML code.
     function main_loop($stdin, $xmlm) {
       $i = 0;
-
+      echo $i . ' ';
+      $i = $i + 1;
       $line = '';
 
       while (($line = fgets($stdin, 4096)) !== false) {
