@@ -97,7 +97,7 @@
     const R_LABEL = '/^\s*LABEL.*/i';
 
     /// @var Defines regex for detecting instruction # JUMP〈label〉
-    const R_JUMP = '/^\s*JUMP.*/i';
+    const R_JUMP = '/^\s*JUMP\s+.*/i';
 
     /// @var Defines regex for detecting instruction # JUMPIFEQ〈label〉〈symb1〉〈symb2〉
     const R_JUMPIFEQ = '/^\s*JUMPIFEQ.*/i';
@@ -124,10 +124,10 @@
     const R_VAR = '/[GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*/';
 
     /// @var Defines regex for matching variable or literal operands.
-    const R_SYMB = '/([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*|bool@(true|false)|string@([^\\\s#]|\\[0-9][0-9][0-9])*|nil@nil)/';
+    const R_SYMB = '/([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(0|(\+|-)?[1-9][0-9]*)|bool@(true|false)|string@([^\\\s#]|\\[0-9][0-9][0-9])*|nil@nil)/';
 
     /// @var Defines regex for matching variable or integer literal operands.
-    const R_SYMB_INT = '/([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(\+|-)?[1-9][0-9]*)/';
+    const R_SYMB_INT = '/([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|int@(0|(\+|-)?[1-9][0-9]*))/';
 
     /// @var Defines regex for matching variable or string literal operands.
     const R_SYMB_STRING = '/([GLT]F@[a-zA-Z\_\-\$\&\%\*\?\!][a-zA-Z0-9\_\-\$\&\%\*\?\!]*|string@([^\\\s#]|\\[0-9][0-9][0-9])*)/';
@@ -264,7 +264,7 @@
   			   $xmlm->write_instruction('SETCHAR', $tokens[1], $tokens[2], $tokens[3]);
         else exit(23);
       } elseif (preg_match_all(self::R_TYPE, $line)) {
-        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB) && ($token_count == 3 || preg_match_all(self::R_COMMENT, $tokens[3])))
+        if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_SYMB, $tokens[2]) && ($token_count == 3 || preg_match_all(self::R_COMMENT, $tokens[3])))
   			   $xmlm->write_instruction('TYPE', $tokens[1], $tokens[2]);
         else exit(23);
       } elseif (preg_match_all(self::R_LABEL, $line)) {
@@ -313,6 +313,7 @@
         self::analyze_instruction($line, $xmlm);
         $i = $i + 1;
       }
+      echo 'done';
     }
 
     /// Checks for .ippcode19 file header.
@@ -373,7 +374,7 @@
     function write_instruction($OPcode, $arg1 = null, $arg2 = null, $arg3 = null) {
       if ($this->writer == null) {
         fwrite($this->errf, ERR_NOTINIT);
-        exit (-1);
+        exit (99);
       }
 
       $this->writer->startElement('instruction');
@@ -411,11 +412,13 @@
     private function write_argument($arg, $arg_name) {
       if ($this->writer == null) {
         fwrite($this->errf, ERR_NOTINIT);
-        exit(-1);
+        exit(99);
       }
 
       if ($arg == null)
         return 1;
+      elseif (preg_match_all('/.*#.*/', $arg))
+        exit(99);
       else {
         $arg_attributes = preg_split(self::R_ARGSPLIT, $arg);
         $this->writer->startElement($arg_name);
@@ -438,7 +441,7 @@
     function finalize() {
       if ($this->writer == null) {
         fwrite($this->errf, ERR_NOTINIT);
-        exit(-1);
+        exit(99);
       }
 
       $this->writer->endElement();
@@ -450,10 +453,11 @@
     function print() {
       if ($this->writer == null) {
         fwrite($this->errf, ERR_NOTINIT);
-        exit(-1);
+        exit(99);
       }
 
       $this->writer->flush();
+      echo 'flushing memory';
     }
   }
 
@@ -478,7 +482,7 @@
 
 // program output
   $xmlm->finalize();
-  $xmlm->print();
+  //$xmlm->print();
 
 // stalling the program after finish
   fgets($stdin);
