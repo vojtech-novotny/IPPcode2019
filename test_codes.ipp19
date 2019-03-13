@@ -75,8 +75,9 @@ jump label1
 jump defvar
 JUMP janked_up_mario_party
 jumP kaizo
-JUMPIFEQ notworking
-JUMPIFNEQ notworkingeither
+JUMPIFEQ notworking LF@var1 LF@var2
+jumpifeq syntaxhighlight bool@true LF@false
+JUMPIFNEQ notworkingeither int@10 string@20
 eXit LF@X_it
 ExIT int@0
 DPRINT GF@error_massage
