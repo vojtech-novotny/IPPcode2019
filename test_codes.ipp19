@@ -1,0 +1,100 @@
+
+# Using all the instructions and operands
+.ippcode19
+MOVE LF@x LF@x
+move LF@x int@-10
+MOVE LF@x string@lol
+MOVE LF@x bool@true
+MOVE LF@x bool@false
+MOVE TF@y GF@z
+MOVE nil@nil
+CREATEFRAME
+PUSHFRAME
+POPFRAME
+DEFVAR LF@aaa
+DEFVAR TF@bbb
+DEFVAR GF@ccc
+CALL label1
+call xd
+call lablab_xxdLABEL
+RETURN
+return
+pushs LF@x
+pushs int@+53124890
+pushs string@thisisstring\032Hello\032world!
+pushs bool@true
+pushs bool@false
+pops LF@variable
+pops TF@varia12
+pops GF@xd
+ADD LF@x int@2 int@+2
+SUB LF@y int@-5 int@-6
+MUL LF@z int@30 int@523
+IDIV GF@result int@10 int@2
+LT TF@lt int@10 int@20
+GT GF@gt string@first\032string string@second\032string
+EQ LF@eq bool@true bool@false
+AND LF@and LF@dotheand LF@dothedoot
+OR LF@or LF@dotheor LF@dothedoot
+not GF@not GF@not
+INT2CHAR LF@char int@32
+INT2CHAR LF@char LF@charnum
+stri2int LF@int LF@string int@1
+read LF@int int
+read LF@bool bool
+rEAd LF@string string
+WritE LF@varia12
+write int@1234567890
+write bool@false
+write string@Hello\032world!
+conCat TF@concat LF@string1 LF@string2
+ConCat LF@XD string@Hello\032 string@world!
+cOncAt GF@wierd string@some\032string LF@some_other_string
+StrLen LF@length LF@longString
+strlen LF@lenght string@stringStringSTRING!!!\013
+GETCHAR LF@var LF@string LF@into
+getchar LF@var string@thestringwheretheCHARis int@1337
+SETCHAR LF@thenewstring int@1337 string@nowtheyareswitched
+setchar GF@lmao TF@lmao LF@lmao
+typE LF@thetypestring LF@var
+typE LF@tts int@1
+typE LF@tts nil@nil
+typE LF@typEEEEEE string@xd
+type LF@TITS bool@true
+label label
+label label1
+label XDDDDD
+label label_label_label_label
+label LF_string
+label string
+label typE
+label TYPE
+JUMP jump
+jump JUMP
+jump label1
+jump defvar
+JUMP janked_up_mario_party
+jumP kaizo
+JUMPIFEQ notworking
+JUMPIFNEQ notworkingeither
+eXit LF@X_it
+ExIT int@0
+DPRINT GF@error_massage
+DPRINT int@42069
+DPRINT string@lit
+Dprint bool@false
+BREAK
+
+# testing example code + empty string + comments
+.IPPcode19 # lorem ipsum
+DEFVAR GF@counter # lorem ipsum
+MOVE GF@counter string@ #inicializace proměnné na prázdný řetězec
+#Jednoduchá iterace, dokud nebude splněna zadaná podmínka
+LABEL while #lorem ipsum
+JUMPIFEQ end GF@counter string@aaa# Lorem ipsum
+WRITE string@counter\032obsahuje\032 # Lorem ipsum
+WRITE GF@counter# Lorem ipsum
+WRITE string@\010 # Lorem ipsum
+CONCAT GF@counter GF@counter string@a # Lorem ipsum
+JUMP while# Lorem ipsum
+LABEL end # Lorem ipsum
