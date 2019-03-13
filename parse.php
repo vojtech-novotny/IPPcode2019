@@ -284,7 +284,7 @@
   			   $xmlm->write_instruction('JUMPIFNEQ', $tokens[1], $tokens[2], $tokens[3]);
         else exit(23);
       } elseif (preg_match_all(self::R_EXIT, $line, $matches, PREG_SET_ORDER, 0)) {
-        if (preg_match_all(self::R_SYMB, $tokens[1]) && ($token_count == 2 || preg_match_all(self::R_COMMENT, $tokens[2])))
+        if (preg_match_all(self::R_SYMB_INT, $tokens[1]) && ($token_count == 2 || preg_match_all(self::R_COMMENT, $tokens[2])))
   			   $xmlm->write_instruction('EXIT', $tokens[1]);
         else exit(23);
       } elseif (preg_match_all(self::R_DPRINT, $line, $matches, PREG_SET_ORDER, 0)) {
