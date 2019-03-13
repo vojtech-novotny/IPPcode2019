@@ -1,6 +1,9 @@
 <?php
   class Lexical_Analyzer {
 
+    /// @var Defines regex for matching .IPPcode19 header.
+    const R_HEADER = '/^\.ippcode19[\t ]*(\#.*)?$/i';
+
     // ### Definitions of regular expression detecting instruction OP Codes.
 
     /// @var Defines regex for matching empty lines (or with comments).
@@ -305,6 +308,15 @@
         $i = $i + 1;
       }
     }
+
+    /// Checks for .ippcode19 file header.
+    /// If the header is not found or is in an incorrect format,
+    /// application exits with exit code 21.
+    function check_for_header($stdin) {
+      $line = trim(fgets($stdin));
+      if (preg_match_all(self::R_HEADER, $line) == false)
+        exit(21);
+    }
   }
 
 
@@ -446,6 +458,9 @@
 // program setup
   $lex = new Lexical_Analyzer();
   $stdin = fopen('php://stdin', 'r');
+
+  $lex->check_for_header($stdin);
+
   $xmlm = new XML_Manager();
   $xmlm->init();
 
