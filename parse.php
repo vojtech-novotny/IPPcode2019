@@ -10,7 +10,7 @@
     const R_EMPTY = '/^[\t\f ]*(\#.*)?$/';
 
     /// @var Defines regex for detecting instruction # MOVE〈var〉〈symb〉
-    const R_MOVE = '/^\s*MOVE.*/i';
+    const R_MOVE = '/^\s*MOVE\s+.*/i';
 
     /// @var Defines regex for detecting instruction # CREATEFRAME
     const R_CREATEFRAME = '/^\s*CREATEFRAME.*/i';
@@ -22,94 +22,94 @@
     const R_POPFRAME = '/^\s*POPFRAME.*/i';
 
     /// @var Defines regex for detecting instruction # DEFVAR〈var〉
-    const R_DEFVAR = '/^\s*DEFVAR.*/i';
+    const R_DEFVAR = '/^\s*DEFVAR\s+.*/i';
 
     /// @var Defines regex for detecting instruction # CALL〈label〉
-    const R_CALL = '/^\s*CALL.*/i';
+    const R_CALL = '/^\s*CALL\s+.*/i';
 
     /// @var Defines regex for detecting instruction # RETURN
     const R_RETURN = '/^\s*RETURN.*/i';
 
     /// @var Defines regex for detecting instruction # PUSHS〈symb〉
-    const R_PUSHS = '/^\s*PUSHS.*/i';
+    const R_PUSHS = '/^\s*PUSHS\s+.*/i';
 
     /// @var Defines regex for detecting instruction # POPS〈var〉
-    const R_POPS = '/^\s*POPS.*/i';
+    const R_POPS = '/^\s*POPS\s+.*/i';
 
     /// @var Defines regex for detecting instruction # ADD〈var〉〈symb1〉〈symb2〉
-    const R_ADD = '/^\s*ADD.*/i';
+    const R_ADD = '/^\s*ADD\s+.*/i';
 
     /// @var Defines regex for detecting instruction # SUB〈var〉〈symb1〉〈symb2〉
-    const R_SUB = '/^\s*SUB.*/i';
+    const R_SUB = '/^\s*SUB\s+.*/i';
 
     /// @var Defines regex for detecting instruction # MUL〈var〉〈symb1〉〈symb2〉
-    const R_MUL = '/^\s*MUL.*/i';
+    const R_MUL = '/^\s*MUL\s+.*/i';
 
     /// @var Defines regex for detecting instruction # IDIV〈var〉〈symb1〉〈symb2〉
-    const R_IDIV = '/^\s*IDIV.*/i';
+    const R_IDIV = '/^\s*IDIV\s+.*/i';
 
     /// @var Defines regex for detecting instruction # LT〈var〉〈symb1〉〈symb2〉
-    const R_LT = '/^\s*LT.*/i';
+    const R_LT = '/^\s*LT\s+.*/i';
 
     /// @var Defines regex for detecting instruction # GT〈var〉〈symb1〉〈symb2〉
-    const R_GT = '/^\s*GT.*/i';
+    const R_GT = '/^\s*GT\s+.*/i';
 
     /// @var Defines regex for detecting instruction # EQ〈var〉〈symb1〉〈symb2〉
-    const R_EQ = '/^\s*EQ.*/i';
+    const R_EQ = '/^\s*EQ\s+.*/i';
 
     /// @var Defines regex for detecting instruction # AND〈var〉〈symb1〉〈symb2〉
-    const R_AND = '/^\s*AND.*/i';
+    const R_AND = '/^\s*AND\s+.*/i';
 
     /// @var Defines regex for detecting instruction # OR〈var〉〈symb1〉〈symb2〉
-    const R_OR = '/^\s*OR.*/i';
+    const R_OR = '/^\s*OR\s+.*/i';
 
     /// @var Defines regex for detecting instruction # NOT〈var〉〈symb1〉〈symb2〉
-    const R_NOT = '/^\s*NOT.*/i';
+    const R_NOT = '/^\s*NOT\s+.*/i';
 
     /// @var Defines regex for detecting instruction # INT2CHAR〈var〉〈symb〉
-    const R_INT2CHAR = '/^\s*INT2CHAR.*/i';
+    const R_INT2CHAR = '/^\s*INT2CHAR\s+.*/i';
 
     /// @var Defines regex for detecting instruction # STRI2INT〈var〉〈symb1〉〈symb2〉
-    const R_STRI2INT = '/^\s*STRI2INT.*/i';
+    const R_STRI2INT = '/^\s*STRI2INT\s+.*/i';
 
     /// @var Defines regex for detecting instruction # READ〈var〉〈type〉
-    const R_READ = '/^\s*READ.*/i';
+    const R_READ = '/^\s*READ\s+.*/i';
 
     /// @var Defines regex for detecting instruction # WRITE〈symb〉
-    const R_WRITE = '/^\s*WRITE.*/i';
+    const R_WRITE = '/^\s*WRITE\s+.*/i';
 
     /// @var Defines regex for detecting instruction # CONCAT〈var〉〈symb1〉〈symb2〉
-    const R_CONCAT = '/^\s*CONCAT.*/i';
+    const R_CONCAT = '/^\s*CONCAT\s+.*/i';
 
     /// @var Defines regex for detecting instruction # STRLEN〈var〉〈symb〉
-    const R_STRLEN = '/^\s*STRLEN.*/i';
+    const R_STRLEN = '/^\s*STRLEN\s+.*/i';
 
     /// @var Defines regex for detecting instruction # GETCHAR〈var〉〈symb1〉〈symb2〉
-    const R_GETCHAR = '/^\s*GETCHAR.*/i';
+    const R_GETCHAR = '/^\s*GETCHAR\s+.*/i';
 
     /// @var Defines regex for detecting instruction # SETCHAR〈var〉〈symb1〉〈symb2〉
-    const R_SETCHAR = '/^\s*SETCHAR.*/i';
+    const R_SETCHAR = '/^\s*SETCHAR\s+.*/i';
 
     /// @var Defines regex for detecting instruction # TYPE〈var〉〈symb〉
-    const R_TYPE = '/^\s*TYPE.*/i';
+    const R_TYPE = '/^\s*TYPE\s+.*/i';
 
     /// @var Defines regex for detecting instruction # LABEL〈label〉
-    const R_LABEL = '/^\s*LABEL.*/i';
+    const R_LABEL = '/^\s*LABEL\s+.*/i';
 
     /// @var Defines regex for detecting instruction # JUMP〈label〉
     const R_JUMP = '/^\s*JUMP\s+.*/i';
 
     /// @var Defines regex for detecting instruction # JUMPIFEQ〈label〉〈symb1〉〈symb2〉
-    const R_JUMPIFEQ = '/^\s*JUMPIFEQ.*/i';
+    const R_JUMPIFEQ = '/^\s*JUMPIFEQ\s+.*/i';
 
     /// @var Defines regex for detecting instruction # JUMPIFNEQ〈label〉〈symb1〉〈symb2〉
-    const R_JUMPIFNEQ = '/^\s*JUMPIFNEQ.*/i';
+    const R_JUMPIFNEQ = '/^\s*JUMPIFNEQ\s+.*/i';
 
     /// @var Defines regex for detecting instruction # EXIT〈symb〉
-    const R_EXIT = '/^\s*EXIT.*/i';
+    const R_EXIT = '/^\s*EXIT\s+.*/i';
 
     /// @var Defines regex for detecting instruction # DPRINT〈symb〉
-    const R_DPRINT = '/^\s*DPRINT.*/i';
+    const R_DPRINT = '/^\s*DPRINT\s+.*/i';
 
     /// @var Defines regex for detecting instruction # BREAK
     const R_BREAK = '/^\s*BREAK.*/i';
@@ -303,17 +303,18 @@
     /// @param $xmlm  XML manager used to write the XML code.
     function main_loop($stdin, $xmlm) {
       $i = 0;
-      echo $i . ' ';
+      //echo $i . ' ';
       $i = $i + 1;
       $line = '';
 
       while (($line = fgets($stdin, 4096)) !== false) {
-        echo $i . ' ';
+        //echo $i . ' ';
         $line = trim($line);
+        if (preg_match_all('/.*endthefuckingfile.*/', $line))
+          break;
         self::analyze_instruction($line, $xmlm);
         $i = $i + 1;
       }
-      echo 'done';
     }
 
     /// Checks for .ippcode19 file header.
@@ -355,14 +356,14 @@
         $this->writer = new XMLWriter();
         $this->writer->openURI('php://output');
         $this->writer->setIndent(1);
-        $this->writer->startDocument();
+        $this->writer->startDocument('1.0', 'UTF-8');
         $this->writer->startElement('program');
         $this->writer->startAttribute('language');
         $this->writer->text('IPPcode19');
         $this->writer->endAttribute();
       } else {
         fwrite($this->errf, ERR_REINIT);
-        exit (-1);
+        exit (99);
       }
     }
 
@@ -424,15 +425,23 @@
         $this->writer->startElement($arg_name);
         $this->writer->startAttribute('type');
 
-        if (preg_match_all(self::R_VAR, $arg))
-          $this->writer->text('var');
-        else
+        if(count($arg_attributes) == 1) {
+          $this->writer->text('label');
+          $this->writer->endAttribute();
           $this->writer->text($arg_attributes[0]);
+          $this->writer->endElement();
+          return 0;
+        } else {
+          if (preg_match_all(self::R_VAR, $arg))
+            $this->writer->text('var');
+          else
+            $this->writer->text($arg_attributes[0]);
 
-        $this->writer->endAttribute();
-        $this->writer->text($arg_attributes[1]);
-        $this->writer->endElement();
-        return 0;
+          $this->writer->endAttribute();
+          $this->writer->text($arg_attributes[1]);
+          $this->writer->endElement();
+          return 0;
+        }
       }
     }
 
@@ -457,7 +466,6 @@
       }
 
       $this->writer->flush();
-      echo 'flushing memory';
     }
   }
 
