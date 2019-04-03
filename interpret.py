@@ -67,109 +67,109 @@ class Parser:
 class Interpret:
     """Interprets(executes) code parsed out of XML by Parser."""
 
-    def do_MOVE(self, var, symb):
+    def do_MOVE(self, instruction):         #, var, symb):
         return True
 
-    def do_CREATEFRAME(self):
+    def do_CREATEFRAME(self, instruction):  #):
         return True
 
-    def do_PUSHFRAME(self):
+    def do_PUSHFRAME(self, instruction):    #):
         return True
 
-    def do_POPFRAME(self):
+    def do_POPFRAME(self, instruction):     #):
         return True
 
-    def do_DEFVAR(self, var):
+    def do_DEFVAR(self, instruction):       #, var):
         return True
 
-    def do_CALL(self, label):
+    def do_CALL(self, instruction):         #, label):
         return True
 
-    def do_RETURN(self):
+    def do_RETURN(self, instruction):       #):
         return True
 
-    def do_PUSHS(self, symb):
+    def do_PUSHS(self, instruction):        #, symb):
         return True
 
-    def do_POPS(self, var):
+    def do_POPS(self, instruction):         #, var):
         return True
 
-    def do_ADD(self, var, symb1, symb2):
+    def do_ADD(self, instruction):          #, var, symb1, symb2):
         return True
 
-    def do_SUB(self, var, symb1, symb2):
+    def do_SUB(self, instruction):          #, var, symb1, symb2):
         return True
 
-    def do_MUL(self, var, symb1, symb2):
+    def do_MUL(self, instruction):          #, var, symb1, symb2):
         return True
 
-    def do_IDIV(self, var, symb1, symb2):
+    def do_IDIV(self, instruction):         #, var, symb1, symb2):
         return True
 
-    def do_LT(self, var, symb1, symb2):
+    def do_LT(self, instruction):           #, var, symb1, symb2):
         return True
 
-    def do_GT(self, var, symb1, symb2):
+    def do_GT(self, instruction):           #, var, symb1, symb2):
         return True
 
-    def do_EQ(self, var, symb1, symb2):
+    def do_EQ(self, instruction):           #, var, symb1, symb2):
         return True
 
-    def do_AND(self, var, symb1, symb2):
+    def do_AND(self, instruction):          #, var, symb1, symb2):
         return True
 
-    def do_OR(self, var, symb1, symb2):
+    def do_OR(self, instruction):           #, var, symb1, symb2):
         return True
 
-    def do_NOT(self, var, symb):
+    def do_NOT(self, instruction):          #, var, symb):
         return True
 
-    def do_INT2CHAR(self, var, symb):
+    def do_INT2CHAR(self, instruction):     #, var, symb):
         return True
 
-    def do_STRI2INT(self, var, symb1, symb2):
+    def do_STRI2INT(self, instruction):     #, var, symb1, symb2):
         return True
 
-    def do_READ(self, var, symb1, symb2):
+    def do_READ(self, instruction):         #, var, symb1, symb2):
         return True
 
-    def do_WRITE(self, symb):
+    def do_WRITE(self, instruction):        #, symb):
         return True
 
-    def do_CONCAT(self, var, symb1, symb2):
+    def do_CONCAT(self, instruction):       #, var, symb1, symb2):
         return True
 
-    def do_STRLEN(self, var, symb):
+    def do_STRLEN(self, instruction):       #, var, symb):
         return True
 
-    def do_GETCHAR(self, var, symb1, symb2):
+    def do_GETCHAR(self, instruction):      #, var, symb1, symb2):
         return True
 
-    def do_SETCHAR(self, var, symb1, symb2):
+    def do_SETCHAR(self, instruction):      #, var, symb1, symb2):
         return True
 
-    def do_TYPE(self, var, symb):
+    def do_TYPE(self, instruction):         #, var, symb):
         return True
 
-    def do_LABEL(self, label):
+    def do_LABEL(self, instruction):        #, label):
         return True
 
-    def do_JUMP(self, label):
+    def do_JUMP(self, instruction):         #, label):
         return True
 
-    def do_JUMPIFEQ(self, label, symb1, symb2):
+    def do_JUMPIFEQ(self, instruction):     #, label, symb1, symb2):
         return True
 
-    def do_JUMPIFNEQ(self, label, symb1, symb2):
+    def do_JUMPIFNEQ(self, instruction):    #, label, symb1, symb2):
         return True
 
-    def do_EXIT(self, symb):
+    def do_EXIT(self, instruction):         #, symb):
         return True
 
-    def do_DPRINT(self, symb):
+    def do_DPRINT(self, instruction):       #, symb):
         return True
 
-    def do_BREAK(self):
+    def do_BREAK(self, instruction):        #):
         return True
 
 
