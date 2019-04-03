@@ -10,6 +10,44 @@ class Parser:
     interpret = Interpret()
     symtable = Symtable()
 
+    instructions = {
+        "MOVE":interpret.do_MOVE,
+        "CREATEFRAME":interpet.do_CREATEFRAME,
+        "PUSHFRAME":interpret.do_PUSHFRAME,
+        "POPFRAME":interpret.do_POPFRAME,
+        "DEFVAR":interpret.do_DEFVAR,
+        "CALL":interpret.do_CALL,
+        "RETURN":interpret.do_RETURN,
+        "PUSHS":interpret.do_PUSHS,
+        "POPS":interpret.do_POPS,
+        "ADD":interpret.do_ADD,
+        "SUB":interpret.do_SUB,
+        "MUL":interpret.do_MUL,
+        "IDIV":interpret.do_IDIV,
+        "LT":interpret.do_LT,
+        "GT":interpret.do_GT,
+        "EQ":interpret.do_EQ,
+        "AND":interpret.do_AND,
+        "OR":interpret.do_OR,
+        "NOT":interpret.do_NOT,
+        "INT2CHAR":interpret.do_INT2CHAR,
+        "STRI2INT":interpret.do_STRI2INT,
+        "READ":interpret.do_READ,
+        "WRITE":interpret.do_WRITE,
+        "CONCAT":interpret.do_CONCAT,
+        "STRLEN":interpret.do_STRLEN,
+        "GETCHAR":interpret.do_GETCHAR,
+        "SETCHAR":interpret.do_SETCHAR,
+        "TYPE":interpret.do_TYPE,
+        "LABEL":interpret.do_LABEL,
+        "JUMP":interpret.do_JUMP,
+        "JUMPIFEQ":interpret.do_JUMPIFEQ,
+        "JUMPIFNEQ":interpret.do_JUMPIFEQ,
+        "EXIT":interpret.do_EXIT,
+        "DPRINT":interpret.do_DPRINT,
+        "BREAK":interpret.do_BREAK,
+    }
+
     def main_loop(self):
 
         instruction = None
