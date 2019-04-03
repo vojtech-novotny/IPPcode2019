@@ -10,24 +10,13 @@ class Parser:
     interpret = Interpret()
     symtable = Symtable()
 
-    instructions = {
-        "MOVE":interpret.do_MOVE,
-        "CREATEFRAME"
-    }
-
-
-
     def main_loop(self):
-
 
         instruction = None
 
         while True:
             instruction = get_instruction(IP)
             IP++
-
-
-
 
         return True
 
@@ -40,8 +29,111 @@ class Parser:
 class Interpret:
     """Interprets(executes) code parsed out of XML by Parser."""
 
-    def do_MOVE(self, arg1, arg2):
+    def do_MOVE(self, var, symb):
         return True
+
+    def do_CREATEFRAME(self):
+        return True
+
+    def do_PUSHFRAME(self):
+        return True
+
+    def do_POPFRAME(self):
+        return True
+
+    def do_DEFVAR(self, var):
+        return True
+
+    def do_CALL(self, label):
+        return True
+
+    def do_RETURN(self):
+        return True
+
+    def do_PUSHS(self, symb):
+        return True
+
+    def do_POPS(self, var):
+        return True
+
+    def do_ADD(self, var, symb1, symb2):
+        return True
+
+    def do_SUB(self, var, symb1, symb2):
+        return True
+
+    def do_MUL(self, var, symb1, symb2):
+        return True
+
+    def do_IDIV(self, var, symb1, symb2):
+        return True
+
+    def do_LT(self, var, symb1, symb2):
+        return True
+
+    def do_GT(self, var, symb1, symb2):
+        return True
+
+    def do_EQ(self, var, symb1, symb2):
+        return True
+
+    def do_AND(self, var, symb1, symb2):
+        return True
+
+    def do_OR(self, var, symb1, symb2):
+        return True
+
+    def do_NOT(self, var, symb):
+        return True
+
+    def do_INT2CHAR(self, var, symb):
+        return True
+
+    def do_STRI2INT(self, var, symb1, symb2):
+        return True
+
+    def do_READ(self, var, symb1, symb2):
+        return True
+
+    def do_WRITE(self, symb):
+        return True
+
+    def do_CONCAT(self, var, symb1, symb2):
+        return True
+
+    def do_STRLEN(self, var, symb):
+        return True
+
+    def do_GETCHAR(self, var, symb1, symb2):
+        return True
+
+    def do_SETCHAR(self, var, symb1, symb2):
+        return True
+
+    def do_TYPE(self, var, symb):
+        return True
+
+    def do_LABEL(self, label):
+        return True
+
+    def do_JUMP(self, label):
+        return True
+
+    def do_JUMPIFEQ(self, label, symb1, symb2):
+        return True
+
+    def do_JUMPIFNEQ(self, label, symb1, symb2):
+        return True
+
+    def do_EXIT(self, symb):
+        return True
+
+    def do_DPRINT(self, symb):
+        return True
+
+    def do_BREAK(self):
+        return True
+
 
 
 class Symtable:
