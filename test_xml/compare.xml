@@ -44,7 +44,7 @@
  <instruction order="12" opcode="WRITE">
   <arg1 type="var">res</arg1>
  </instruction>
- <instruction order="13" opcode="LT">
+ <instruction order="13" opcode="GT">
   <arg1 type="var">res</arg1>
   <arg2 type="var">b</arg2>
   <arg3 type="int">20</arg3>

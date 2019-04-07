@@ -11,5 +11,5 @@ EQ GF@res GF@res int@10
 WRITE GF@res
 EQ GF@res GF@a bool@true
 WRITE GF@res
-LT GF@res GF@b int@20
+GT GF@res GF@b int@20
 WRITE GF@res
