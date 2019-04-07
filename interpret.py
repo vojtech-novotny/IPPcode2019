@@ -36,6 +36,9 @@ class Parser:
             "LT":interpret.do_Comparison,
             "GT":interpret.do_Comparison,
             "EQ":interpret.do_Comparison,
+            "AND":interpret.do_Logic,
+            "OR":interpret.do_Logic,
+            "NOT":interpret.do_NOT,
         }
 
         # predefining labels
@@ -111,17 +114,17 @@ class Interpret:
 
         return symtable.set_var(instruction[0].text, type, value)
 
-    def do_ADD(self, symtable, name, value1, value2, type):
-        return symtable.set_var(name, type, value1 + value2)
+    def do_WRITE(self, instruction, symtable):
+        result = None
 
-    def do_SUB(self, symtable, name, value1, value2, type):
-        return symtable.set_var(name, type, value1 - value2)
+        if (instruction[0].attrib['type'] == 'var'):
+            result = str(symtable.get_var(instruction[0].text)[1])
+        else:
+            result = instruction[0].text
 
-    def do_MUL(self, symtable, name, value1, value2, type):
-        return symtable.set_var(name, type, value1 * value2)
+        print(result)
+        return True
 
-    def do_IDIV(self, symtable, name, value1, value2, type):
-        return symtable.set_var(name, type, value1 // value2)
 
     def do_Arithmetic(self, instruction, symtable):
         """All the typechecking and defchecking is done in one function,
@@ -138,12 +141,12 @@ class Interpret:
             value1 = symtable.get_var(instruction[1].text)
             type1 = value1[0]
             if (type1 != 'int'):
-                sys.exit(57)
+                sys.exit(53)
             value1 = value1[1]
         elif type1 == 'int':
             value1 = int(instruction[1].text)
         else:
-            sys.exit(57)
+            sys.exit(53)
 
         type2 = instruction[2].attrib['type']
         value2 = None
@@ -171,16 +174,18 @@ class Interpret:
         else:
             sys.exit(32)
 
-    def do_WRITE(self, instruction, symtable):
-        result = None
+    def do_ADD(self, symtable, name, value1, value2, type):
+        return symtable.set_var(name, type, value1 + value2)
 
-        if (instruction[0].attrib['type'] == 'var'):
-            result = str(symtable.get_var(instruction[0].text)[1])
-        else:
-            result = instruction[0].text
+    def do_SUB(self, symtable, name, value1, value2, type):
+        return symtable.set_var(name, type, value1 - value2)
 
-        print(result)
-        return True
+    def do_MUL(self, symtable, name, value1, value2, type):
+        return symtable.set_var(name, type, value1 * value2)
+
+    def do_IDIV(self, symtable, name, value1, value2, type):
+        return symtable.set_var(name, type, value1 // value2)
+
 
     def do_Comparison(self, instruction, symtable):
         """All the typechecking and defchecking is done in one function,
@@ -251,7 +256,76 @@ class Interpret:
         return symtable.set_var(name, 'bool', type1 == type2 and value1 == value2)
 
 
+    def do_Logic(self, instruction, symtable):
+        """All the typechecking and defchecking is done in one function,
+        logic computation is done in separate functions at the end."""
 
+        # undefined variable
+        if (instruction[0].attrib['type'] != 'var' or symtable.check_defined_var(instruction[0].text) == False):
+            sys.exit(54)
+
+        type1 = instruction[1].attrib['type']
+        value1 = None
+
+        if (type1 == 'var'):
+            value1 = symtable.get_var(instruction[1].text)
+            type1 = value1[0]
+            if (type1 != 'bool'):
+                sys.exit(53)
+            value1 = value1[1]
+        elif type1 == 'bool':
+            value1 = instruction[1].text == 'true'
+        else:
+            sys.exit(53)
+
+        type2 = instruction[2].attrib['type']
+        value2 = None
+
+        if (type2 == 'var'):
+            value2 = symtable.get_var(instruction[2].text)
+            type2 = value2[0]
+            if (type2 != 'bool'):
+                sys.exit(53)
+            value2 = value2[1]
+        elif type2 == 'bool':
+            value2 = instruction[2].text == 'true'
+        else:
+            sys.exit(53)
+
+        # Actual computation:
+        if instruction.attrib['opcode'] == 'AND':
+            return self.do_AND(symtable, instruction[0].text, value1, value2)
+        elif instruction.attrib['opcode'] == 'OR':
+            return self.do_OR(symtable, instruction[0].text, value1, value2)
+        else:
+            sys.exit(32)
+
+    def do_AND(self, symtable, name, value1, value2):          #, var, symb1, symb2):
+        return symtable.set_var(name, 'bool', value1 and value2)
+
+    def do_OR(self, symtable, name, value1, value2):            #, var, symb1, symb2):
+        return symtable.set_var(name, 'bool', value1 or value2)
+
+    def do_NOT(self, instruction, symtable):            #, var, symb1, symb2):
+        # undefined variable
+        if (instruction[0].attrib['type'] != 'var' or symtable.check_defined_var(instruction[0].text) == False):
+            sys.exit(54)
+
+        type = instruction[1].attrib['type']
+        value = None
+
+        if (type == 'var'):
+            value = symtable.get_var(instruction[1].text)
+            type = value[0]
+            if (type != 'bool'):
+                sys.exit(53)
+            value = value[1]
+        elif type == 'bool':
+            value = instruction[1].text == 'true'
+        else:
+            sys.exit(53)
+
+        return symtable.set_var(instruction[0].text, 'bool', not value)
 
 
     def do_CREATEFRAME(self, instruction):  #):
@@ -273,15 +347,6 @@ class Interpret:
         return True
 
     def do_POPS(self, instruction):         #, var):
-        return True
-
-    def do_AND(self, instruction):          #, var, symb1, symb2):
-        return True
-
-    def do_OR(self, instruction):           #, var, symb1, symb2):
-        return True
-
-    def do_NOT(self, instruction):          #, var, symb):
         return True
 
     def do_INT2CHAR(self, instruction):     #, var, symb):

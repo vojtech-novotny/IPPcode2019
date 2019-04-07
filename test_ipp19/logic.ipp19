@@ -1,0 +1,12 @@
+.IPPcode19
+DEFVAR GF@a
+DEFVAR GF@b
+DEFVAR GF@result
+MOVE GF@a bool@true
+MOVE GF@b bool@false
+AND GF@result GF@a GF@b
+WRITE GF@result
+OR GF@result GF@a GF@b
+WRITE GF@result
+NOT GF@result GF@a
+WRITE GF@result
