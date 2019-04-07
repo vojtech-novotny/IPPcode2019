@@ -432,13 +432,16 @@
           $this->writer->endElement();
           return 0;
         } else {
-          if (preg_match_all(self::R_VAR, $arg))
+          if (preg_match_all(self::R_VAR, $arg)) {
             $this->writer->text('var');
-          else
+            $this->writer->endAttribute();
+            $this->writer->text($arg_attributes[0] . '@' . $arg_attributes[1]);
+          } else {
             $this->writer->text($arg_attributes[0]);
+            $this->writer->endAttribute();
+            $this->writer->text($arg_attributes[1]);
+          }
 
-          $this->writer->endAttribute();
-          $this->writer->text($arg_attributes[1]);
           $this->writer->endElement();
           return 0;
         }
