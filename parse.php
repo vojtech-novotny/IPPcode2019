@@ -475,7 +475,16 @@
 
 // program setup
   $lex = new Lexical_Analyzer();
-  $stdin = fopen('php://stdin', 'r');
+
+  $args = getopt('i:');
+
+  $stdin = null;
+
+  if ($args == false) {
+      $stdin = fopen('php://stdin', 'r');
+  } else {
+      $stdin = fopen($args['i'], 'r');
+  }
 
   if ($stdin == false)
     exit(11);
