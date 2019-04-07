@@ -1,74 +1,162 @@
 import xml.etree.ElementTree as ET
+import sys
 
 class Parser:
     """Main program controller, parses instructions out of XML file."""
 
     IP = 1
-    tree = ET.parse('output.xml')
+    tree = ET.parse('test_inputs\\simple.xml')
     root = tree.getroot()
+    # contains:
+    #     DEFVAR GF@a
+    #     DEFVAR GF@b
+    #     DEFVAR GF@c
+    #     MOVE GF@a int@2
+    #     MOVE GF@b int@3
+    #     ADD GF@c GF@a GF@b
+    #     WRITE GF@c
 
-    interpret = Interpret()
-    symtable = Symtable()
+    def foo(self, interpret, symtable):
+        """Reads instructions from input and executes them."""
 
-    instructions = {
-        "MOVE":interpret.do_MOVE,
-        "CREATEFRAME":interpet.do_CREATEFRAME,
-        "PUSHFRAME":interpret.do_PUSHFRAME,
-        "POPFRAME":interpret.do_POPFRAME,
-        "DEFVAR":interpret.do_DEFVAR,
-        "CALL":interpret.do_CALL,
-        "RETURN":interpret.do_RETURN,
-        "PUSHS":interpret.do_PUSHS,
-        "POPS":interpret.do_POPS,
-        "ADD":interpret.do_ADD,
-        "SUB":interpret.do_SUB,
-        "MUL":interpret.do_MUL,
-        "IDIV":interpret.do_IDIV,
-        "LT":interpret.do_LT,
-        "GT":interpret.do_GT,
-        "EQ":interpret.do_EQ,
-        "AND":interpret.do_AND,
-        "OR":interpret.do_OR,
-        "NOT":interpret.do_NOT,
-        "INT2CHAR":interpret.do_INT2CHAR,
-        "STRI2INT":interpret.do_STRI2INT,
-        "READ":interpret.do_READ,
-        "WRITE":interpret.do_WRITE,
-        "CONCAT":interpret.do_CONCAT,
-        "STRLEN":interpret.do_STRLEN,
-        "GETCHAR":interpret.do_GETCHAR,
-        "SETCHAR":interpret.do_SETCHAR,
-        "TYPE":interpret.do_TYPE,
-        "LABEL":interpret.do_LABEL,
-        "JUMP":interpret.do_JUMP,
-        "JUMPIFEQ":interpret.do_JUMPIFEQ,
-        "JUMPIFNEQ":interpret.do_JUMPIFEQ,
-        "EXIT":interpret.do_EXIT,
-        "DPRINT":interpret.do_DPRINT,
-        "BREAK":interpret.do_BREAK,
-    }
+        instructions = {
+            "MOVE":interpret.do_MOVE,
+            "DEFVAR":interpret.do_DEFVAR,
+            "ADD":interpret.do_Arithmetic,
+            "SUB":interpret.do_Arithmetic,
+            "MUL":interpret.do_Arithmetic,
+            "IDIV":interpret.do_Arithmetic,
+            "WRITE":interpret.do_WRITE,
+        }
 
-    def main_loop(self):
+        instruction_found = True
 
-        instruction = None
+        while (instruction_found):
+            instruction = self.get_instruction(self.IP)
 
-        while True:
-            instruction = get_instruction(IP)
-            IP++
+            # if the next instruction isn't found, program terminates.
+            if (instruction == None):
+                instruction_found = False
+                continue
 
-        return True
+            instructions[instruction.attrib['opcode']](instruction, symtable)
+            # print("IP - ", self.IP)
+            self.IP += 1
 
     def get_instruction(self, ip):
-        return (self.root[ip].attrib['opcode'], root[ip])
+        """Tries to find the instruction with the order == ip.
+        Returns the instruction if it's found and None otherwise."""
+
+        for instruction in self.root.findall('instruction'):
+            if instruction.attrib['order'] == str(ip):
+                return instruction
+        return None
 
     def change_ip(self, IP):
+        """Changes the instruction pointer value after one of the
+        JUMP instructions."""
+        self.IP = IP
         return True
 
 class Interpret:
     """Interprets(executes) code parsed out of XML by Parser."""
 
-    def do_MOVE(self, instruction):         #, var, symb):
+    def do_DEFVAR(self, instruction, symtable):
+        return symtable.define_var(instruction[0].text)
+
+    def do_MOVE(self, instruction, symtable):
+        # undefined variable
+        if (instruction[0].attrib['type'] != 'var' or symtable.check_defined_var(instruction[0].text) == False):
+            sys.exit(54)
+
+        type = instruction[1].attrib['type']
+        value = None
+
+        if (type == 'var'):
+            type = symtable.get_var(instruction[1].text)
+            value = type[1]
+            type = type[0]
+        elif type == 'int':
+            value = int(instruction[1].text)
+        else:
+            value = instruction[1].text
+
+        return symtable.set_var(instruction[0].text, type, value)
+
+    def do_ADD(self, symtable, name, value1, value2, type):
+        return symtable.set_var(name, type, value1 + value2)
+
+    def do_SUB(self, symtable, name, value1, value2, type):
+        return symtable.set_var(name, type, value1 - value2)
+
+    def do_MUL(self, symtable, name, value1, value2, type):
+        return symtable.set_var(name, type, value1 * value2)
+
+    def do_IDIV(self, symtable, name, value1, value2, type):
+        return symtable.set_var(name, type, value1 // value2)
+
+    def do_Arithmetic(self, instruction, symtable):
+        """All the typechecking and defchecking is done in one function,
+        arithmetic computation is done in separate functions at the end."""
+
+        # undefined variable
+        if (instruction[0].attrib['type'] != 'var' or symtable.check_defined_var(instruction[0].text) == False):
+            sys.exit(54)
+
+        type1 = instruction[1].attrib['type']
+        value1 = None
+
+        if (type1 == 'var'):
+            value1 = symtable.get_var(instruction[1].text)
+            type1 = value1[0]
+            if (type1 != 'int'):
+                sys.exit(57)
+            value1 = value1[1]
+        elif type1 == 'int':
+            value1 = int(instruction[1].text)
+        else:
+            sys.exit(57)
+
+        type2 = instruction[2].attrib['type']
+        value2 = None
+
+        if (type2 == 'var'):
+            value2 = symtable.get_var(instruction[2].text)
+            type2 = value2[0]
+            if (type2 != 'int'):
+                sys.exit(53)
+            value2 = value2[1]
+        elif type2 == 'int':
+            value2 = int(instruction[2].text)
+        else:
+            sys.exit(53)
+
+        # Actual computation:
+        if instruction.attrib['opcode'] == 'ADD':
+            return self.do_ADD(symtable, instruction[0].text, value1, value2, type1)
+        elif instruction.attrib['opcode'] == 'SUB':
+            return self.do_SUB(symtable, instruction[0].text, value1, value2, type1)
+        elif instruction.attrib['opcode'] == 'MUL':
+            return self.do_MUL(symtable, instruction[0].text, value1, value2, type1)
+        elif instruction.attrib['opcode'] == 'IDIV':
+            return self.do_IDIV(symtable, instruction[0].text, value1, value2, type1)
+        else:
+            sys.exit(32)
+
+    def do_WRITE(self, instruction, symtable):
+        result = None
+
+        if (instruction[0].attrib['type'] == 'var'):
+            result = str(symtable.get_var(instruction[0].text)[1])
+        else:
+            result = instruction[0].text
+
+        print(result)
         return True
+
+
+
+
 
     def do_CREATEFRAME(self, instruction):  #):
         return True
@@ -77,9 +165,6 @@ class Interpret:
         return True
 
     def do_POPFRAME(self, instruction):     #):
-        return True
-
-    def do_DEFVAR(self, instruction):       #, var):
         return True
 
     def do_CALL(self, instruction):         #, label):
@@ -92,18 +177,6 @@ class Interpret:
         return True
 
     def do_POPS(self, instruction):         #, var):
-        return True
-
-    def do_ADD(self, instruction):          #, var, symb1, symb2):
-        return True
-
-    def do_SUB(self, instruction):          #, var, symb1, symb2):
-        return True
-
-    def do_MUL(self, instruction):          #, var, symb1, symb2):
-        return True
-
-    def do_IDIV(self, instruction):         #, var, symb1, symb2):
         return True
 
     def do_LT(self, instruction):           #, var, symb1, symb2):
@@ -131,9 +204,6 @@ class Interpret:
         return True
 
     def do_READ(self, instruction):         #, var, symb1, symb2):
-        return True
-
-    def do_WRITE(self, instruction):        #, symb):
         return True
 
     def do_CONCAT(self, instruction):       #, var, symb1, symb2):
@@ -177,33 +247,29 @@ class Interpret:
 class Symtable:
     """Contains and manages all information about variables and labels."""
 
-    var_table = { 'var_table':('type', 'value') }
-    label_table = { 'label_table':'instruction_pointer' }
+    # currently doesn't support frames
+    var_table = {}      # { 'var_table':('type', 'value') }
+
+    # Not implemented:
+    LF_table = {}      # { 'var_table':('type', 'value') }
+    GF_table = {}       # { 'var_table':('type', 'value') }
+    TF_table = {}       # { 'var_table':('type', 'value') }
+    label_table = {}    # { 'label_table':'instruction_pointer' }
 
     def check_defined_var(self, name):
         return name in self.var_table
 
-    def check_defined_label(self, name):
-        return name in self.label_table
-
     def check_type(self, name):
         if name not in self.var_table:
-            return False
+            return None
         else:
             return self.var_table[name][0]
 
     def define_var(self, name):
         if name in self.var_table:
-            return False
+            sys.exit(52)
         else:
             self.var_table[name] = ('nil', 'nil')
-            return True
-
-    def define_label(self, name, IP):
-        if name in self.label_table:
-            return False
-        else:
-            self.label_table[name] = IP
             return True
 
     def set_var(self, name, type, value):
@@ -215,12 +281,33 @@ class Symtable:
 
     def get_var(self, name):
         if name not in self.var_table:
-            return False
+            sys.exit(54)
         else:
             return self.var_table[name]
+
+    def check_defined_label(self, name):
+        return name in self.label_table
+
+    def define_label(self, name, IP):
+        if name in self.label_table:
+            return False
+        else:
+            self.label_table[name] = IP
+            return True
 
     def get_label(self, name):
         if name not in self.label_table:
             return False
         else:
             return self.label_table[name]
+
+
+def Main():
+    symtable = Symtable()
+    interpet = Interpret()
+
+    parser = Parser()
+    parser.foo(interpet, symtable)
+
+if __name__ == '__main__':
+    Main()
