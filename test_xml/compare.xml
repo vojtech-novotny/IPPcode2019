@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<program language="IPPcode19">
+ <instruction order="1" opcode="DEFVAR">
+  <arg1 type="var">a</arg1>
+ </instruction>
+ <instruction order="2" opcode="DEFVAR">
+  <arg1 type="var">b</arg1>
+ </instruction>
+ <instruction order="3" opcode="DEFVAR">
+  <arg1 type="var">c</arg1>
+ </instruction>
+ <instruction order="4" opcode="DEFVAR">
+  <arg1 type="var">res</arg1>
+ </instruction>
+ <instruction order="5" opcode="MOVE">
+  <arg1 type="var">a</arg1>
+  <arg2 type="bool">true</arg2>
+ </instruction>
+ <instruction order="6" opcode="MOVE">
+  <arg1 type="var">b</arg1>
+  <arg2 type="int">10</arg2>
+ </instruction>
+ <instruction order="7" opcode="MOVE">
+  <arg1 type="var">c</arg1>
+  <arg2 type="string">Ahoj</arg2>
+ </instruction>
+ <instruction order="8" opcode="MOVE">
+  <arg1 type="var">res</arg1>
+  <arg2 type="nil">nil</arg2>
+ </instruction>
+ <instruction order="9" opcode="EQ">
+  <arg1 type="var">res</arg1>
+  <arg2 type="var">res</arg2>
+  <arg3 type="int">10</arg3>
+ </instruction>
+ <instruction order="10" opcode="WRITE">
+  <arg1 type="var">res</arg1>
+ </instruction>
+ <instruction order="11" opcode="EQ">
+  <arg1 type="var">res</arg1>
+  <arg2 type="var">a</arg2>
+  <arg3 type="bool">true</arg3>
+ </instruction>
+ <instruction order="12" opcode="WRITE">
+  <arg1 type="var">res</arg1>
+ </instruction>
+ <instruction order="13" opcode="LT">
+  <arg1 type="var">res</arg1>
+  <arg2 type="var">b</arg2>
+  <arg3 type="int">20</arg3>
+ </instruction>
+ <instruction order="14" opcode="WRITE">
+  <arg1 type="var">res</arg1>
+ </instruction>
+</program>
