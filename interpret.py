@@ -1,20 +1,26 @@
 import xml.etree.ElementTree as ET
 import sys
+import argparse
+
+# reading command line arguments
+arg_parser = argparse.ArgumentParser(description='Do some iterpreting.')
+arg_parser.add_argument('-i', action='store', dest='input')
+args = arg_parser.parse_args()
+
+input_path = None
+
+if args.input != None:
+    input_path = args.input
+else:
+    input_path = sys.stdin
+
 
 class Parser:
     """Main program controller, parses instructions out of XML file."""
 
     IP = 1
-    tree = ET.parse('test_inputs\\simple.xml')
+    tree = ET.parse(input_path)
     root = tree.getroot()
-    # contains:
-    #     DEFVAR GF@a
-    #     DEFVAR GF@b
-    #     DEFVAR GF@c
-    #     MOVE GF@a int@2
-    #     MOVE GF@b int@3
-    #     ADD GF@c GF@a GF@b
-    #     WRITE GF@c
 
     def foo(self, interpret, symtable):
         """Reads instructions from input and executes them."""
@@ -27,7 +33,13 @@ class Parser:
             "MUL":interpret.do_Arithmetic,
             "IDIV":interpret.do_Arithmetic,
             "WRITE":interpret.do_WRITE,
+            "LT":interpret.do_Comparison,
+            "GT":interpret.do_Comparison,
+            "EQ":interpret.do_Comparison,
         }
+
+        # predefining labels
+        self.interpret_all_labels(symtable)
 
         instruction_found = True
 
@@ -58,6 +70,16 @@ class Parser:
         self.IP = IP
         return True
 
+    def interpret_all_labels(self, symtable):
+        """Finds all the label instructions and inserts them into the symtable,
+        so they can be accessed by instructions before their code definition."""
+
+        for instruction in self.root.findall('instruction'):
+            if instruction.attrib['opcode'] == 'LABEL':
+                symtable.define_label(instruction[0].text, int(instruction.attrib['order']))
+
+
+
 class Interpret:
     """Interprets(executes) code parsed out of XML by Parser."""
 
@@ -78,8 +100,14 @@ class Interpret:
             type = type[0]
         elif type == 'int':
             value = int(instruction[1].text)
-        else:
+        elif type == 'bool':
+            value = instruction[1].text == 'true'
+        elif type == 'string':
             value = instruction[1].text
+        elif type == 'nil':
+            value = None
+        else:
+            sys.exit(53)
 
         return symtable.set_var(instruction[0].text, type, value)
 
@@ -154,6 +182,74 @@ class Interpret:
         print(result)
         return True
 
+    def do_Comparison(self, instruction, symtable):
+        """All the typechecking and defchecking is done in one function,
+        comparison computation is done in separate functions at the end."""
+
+        # undefined variable
+        if (instruction[0].attrib['type'] != 'var' or symtable.check_defined_var(instruction[0].text) == False):
+            sys.exit(54)
+
+        type1 = instruction[1].attrib['type']
+        value1 = None
+
+        if (type1 == 'var'):
+            value1 = symtable.get_var(instruction[1].text)
+            type1 = value1[0]
+            value1 = value1[1]
+        elif type1 == 'int':
+            value1 = int(instruction[1].text)
+        elif type1 == 'bool':
+            value1 = instruction[1].text == 'true'
+        elif type1 == 'string':
+            value1 = instruction[1].text
+        elif type1 == 'nil':
+            value1 = None
+        else:
+            sys.exit(53)
+
+        type2 = instruction[2].attrib['type']
+        value2 = None
+
+        if (type2 == 'var'):
+            value2 = symtable.get_var(instruction[2].text)
+            type2 = value2[0]
+            value2 = value2[1]
+        elif type2 == 'int':
+            value2 = int(instruction[2].text)
+        elif type2 == 'bool':
+            value2 = instruction[2].text == 'true'
+        elif type2 == 'string':
+            value2 = instruction[2].text
+        elif type2 == 'nil':
+            value2 = None
+        else:
+            sys.exit(53)
+
+        if type1 != type2:
+            # nil@nil can be compared with anything using the instruction EQ
+            if type1 != 'nil' and type2 != 'nil' or instruction.attrib['opcode'] != 'EQ':
+                sys.exit(53)
+
+        # Actual computation:
+        if instruction.attrib['opcode'] == 'EQ':
+            return self.do_EQ(symtable, instruction[0].text, value1, value2, type1, type2)
+        elif instruction.attrib['opcode'] == 'LT':
+            return self.do_LT(symtable, instruction[0].text, value1, value2)
+        elif instruction.attrib['opcode'] == 'GT':
+            return self.do_GT(symtable, instruction[0].text, value1, value2)
+        else:
+            sys.exit(32)
+
+    def do_LT(self, symtable, name, value1, value2):          #, var, symb1, symb2):
+        return symtable.set_var(name, 'bool', value1 < value2)
+
+    def do_GT(self, symtable, name, value1, value2):           #, var, symb1, symb2):
+        return symtable.set_var(name, 'bool', value1 > value2)
+
+    def do_EQ(self, symtable, name, value1, value2, type1, type2):           #, var, symb1, symb2):
+        return symtable.set_var(name, 'bool', type1 == type2 and value1 == value2)
+
 
 
 
@@ -177,15 +273,6 @@ class Interpret:
         return True
 
     def do_POPS(self, instruction):         #, var):
-        return True
-
-    def do_LT(self, instruction):           #, var, symb1, symb2):
-        return True
-
-    def do_GT(self, instruction):           #, var, symb1, symb2):
-        return True
-
-    def do_EQ(self, instruction):           #, var, symb1, symb2):
         return True
 
     def do_AND(self, instruction):          #, var, symb1, symb2):
@@ -303,6 +390,7 @@ class Symtable:
 
 
 def Main():
+
     symtable = Symtable()
     interpet = Interpret()
 
