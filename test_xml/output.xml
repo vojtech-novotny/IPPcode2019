@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<program language="IPPcode19">
+ <instruction order="1" opcode="MOVE">
+  <arg1 type="var">x</arg1>
+  <arg2 type="var">x</arg2>
+ </instruction>
+ <instruction order="2" opcode="MOVE">
+  <arg1 type="var">x</arg1>
+  <arg2 type="int">-10</arg2>
+ </instruction>
+ <instruction order="3" opcode="MOVE">
+  <arg1 type="var">x</arg1>
+  <arg2 type="string">lol</arg2>
+ </instruction>
+ <instruction order="4" opcode="MOVE">
+  <arg1 type="var">x</arg1>
+  <arg2 type="bool">true</arg2>
+ </instruction>
+ <instruction order="5" opcode="MOVE">
+  <arg1 type="var">x</arg1>
+  <arg2 type="bool">false</arg2>
+ </instruction>
+ <instruction order="6" opcode="MOVE">
+  <arg1 type="var">y</arg1>
+  <arg2 type="var">z</arg2>
+ </instruction>
+ <instruction order="7" opcode="MOVE">
+  <arg1 type="var">y</arg1>
+  <arg2 type="nil">nil</arg2>
+ </instruction>
+ <instruction order="8" opcode="CREATEFRAME"/>
+ <instruction order="9" opcode="PUSHFRAME"/>
+ <instruction order="10" opcode="POPFRAME"/>
+ <instruction order="11" opcode="DEFVAR">
+  <arg1 type="var">aaa</arg1>
+ </instruction>
+ <instruction order="12" opcode="DEFVAR">
+  <arg1 type="var">bbb</arg1>
+ </instruction>
+ <instruction order="13" opcode="DEFVAR">
+  <arg1 type="var">ccc</arg1>
+ </instruction>
+ <instruction order="14" opcode="CALL">
+  <arg1 type="label">label1</arg1>
+ </instruction>
+ <instruction order="15" opcode="CALL">
+  <arg1 type="label">xd</arg1>
+ </instruction>
+ <instruction order="16" opcode="CALL">
+  <arg1 type="label">lablab_xxdLABEL</arg1>
+ </instruction>
+ <instruction order="17" opcode="RETURN"/>
+ <instruction order="18" opcode="RETURN"/>
+ <instruction order="19" opcode="PUSHS">
+  <arg1 type="var">x</arg1>
+ </instruction>
+ <instruction order="20" opcode="PUSHS">
+  <arg1 type="int">+53124890</arg1>
+ </instruction>
+ <instruction order="21" opcode="PUSHS">
+  <arg1 type="string">thisisstring\032Hello\032world!</arg1>
+ </instruction>
+ <instruction order="22" opcode="PUSHS">
+  <arg1 type="bool">true</arg1>
+ </instruction>
+ <instruction order="23" opcode="PUSHS">
+  <arg1 type="bool">false</arg1>
+ </instruction>
+ <instruction order="24" opcode="POPS">
+  <arg1 type="var">variable</arg1>
+ </instruction>
+ <instruction order="25" opcode="POPS">
+  <arg1 type="var">varia12</arg1>
+ </instruction>
+ <instruction order="26" opcode="POPS">
+  <arg1 type="var">xd</arg1>
+ </instruction>
+ <instruction order="27" opcode="ADD">
+  <arg1 type="var">x</arg1>
+  <arg2 type="int">2</arg2>
+  <arg3 type="int">+2</arg3>
+ </instruction>
+ <instruction order="28" opcode="SUB">
+  <arg1 type="var">y</arg1>
+  <arg2 type="int">-5</arg2>
+  <arg3 type="int">-6</arg3>
+ </instruction>
+ <instruction order="29" opcode="MUL">
+  <arg1 type="var">z</arg1>
+  <arg2 type="int">30</arg2>
+  <arg3 type="int">523</arg3>
+ </instruction>
+ <instruction order="30" opcode="IDIV">
+  <arg1 type="var">result</arg1>
+  <arg2 type="int">10</arg2>
+  <arg3 type="int">2</arg3>
+ </instruction>
+ <instruction order="31" opcode="LT">
+  <arg1 type="var">lt</arg1>
+  <arg2 type="int">10</arg2>
+  <arg3 type="int">20</arg3>
+ </instruction>
+ <instruction order="32" opcode="GT">
+  <arg1 type="var">gt</arg1>
+  <arg2 type="string">first\032string</arg2>
+  <arg3 type="string">second\032string</arg3>
+ </instruction>
+ <instruction order="33" opcode="EQ">
+  <arg1 type="var">eq</arg1>
+  <arg2 type="bool">true</arg2>
+  <arg3 type="bool">false</arg3>
+ </instruction>
+ <instruction order="34" opcode="AND">
+  <arg1 type="var">and</arg1>
+  <arg2 type="var">dotheand</arg2>
+  <arg3 type="var">dothedoot</arg3>
+ </instruction>
+ <instruction order="35" opcode="OR">
+  <arg1 type="var">or</arg1>
+  <arg2 type="var">dotheor</arg2>
+  <arg3 type="var">dothedoot</arg3>
+ </instruction>
+ <instruction order="36" opcode="NOT">
+  <arg1 type="var">not</arg1>
+  <arg2 type="var">not</arg2>
+ </instruction>
+ <instruction order="37" opcode="INT2CHAR">
+  <arg1 type="var">char</arg1>
+  <arg2 type="int">32</arg2>
+ </instruction>
+ <instruction order="38" opcode="INT2CHAR">
+  <arg1 type="var">char</arg1>
+  <arg2 type="var">charnum</arg2>
+ </instruction>
+ <instruction order="39" opcode="STRI2INT">
+  <arg1 type="var">int</arg1>
+  <arg2 type="var">string</arg2>
+  <arg3 type="int">1</arg3>
+ </instruction>
+ <instruction order="40" opcode="READ">
+  <arg1 type="var">int</arg1>
+ </instruction>
+ <instruction order="41" opcode="READ">
+  <arg1 type="var">bool</arg1>
+ </instruction>
+ <instruction order="42" opcode="READ">
+  <arg1 type="var">string</arg1>
+ </instruction>
+ <instruction order="43" opcode="WRITE">
+  <arg1 type="var">varia12</arg1>
+ </instruction>
+ <instruction order="44" opcode="WRITE">
+  <arg1 type="int">1234567890</arg1>
+ </instruction>
+ <instruction order="45" opcode="WRITE">
+  <arg1 type="bool">false</arg1>
+ </instruction>
+ <instruction order="46" opcode="WRITE">
+  <arg1 type="string">Hello\032world!</arg1>
+ </instruction>
+ <instruction order="47" opcode="CONCAT">
+  <arg1 type="var">concat</arg1>
+  <arg2 type="var">string1</arg2>
+  <arg3 type="var">string2</arg3>
+ </instruction>
+ <instruction order="48" opcode="CONCAT">
+  <arg1 type="var">XD</arg1>
+  <arg2 type="string">Hello\032</arg2>
+  <arg3 type="string">world!</arg3>
+ </instruction>
+ <instruction order="49" opcode="CONCAT">
+  <arg1 type="var">wierd</arg1>
+  <arg2 type="string">some\032string</arg2>
+  <arg3 type="var">some_other_string</arg3>
+ </instruction>
+ <instruction order="50" opcode="STRLEN">
+  <arg1 type="var">length</arg1>
+  <arg2 type="var">longString</arg2>
+ </instruction>
+ <instruction order="51" opcode="STRLEN">
+  <arg1 type="var">lenght</arg1>
+  <arg2 type="string">stringStringSTRING!!!\013</arg2>
+ </instruction>
+ <instruction order="52" opcode="GETCHAR">
+  <arg1 type="var">var</arg1>
+  <arg2 type="var">string</arg2>
+  <arg3 type="var">into</arg3>
+ </instruction>
+ <instruction order="53" opcode="GETCHAR">
+  <arg1 type="var">var</arg1>
+  <arg2 type="string">thestringwheretheCHARis</arg2>
+  <arg3 type="int">1337</arg3>
+ </instruction>
+ <instruction order="54" opcode="SETCHAR">
+  <arg1 type="var">thenewstring</arg1>
+  <arg2 type="int">1337</arg2>
+  <arg3 type="string">nowtheyareswitched</arg3>
+ </instruction>
+ <instruction order="55" opcode="SETCHAR">
+  <arg1 type="var">lmao</arg1>
+  <arg2 type="var">lmao</arg2>
+  <arg3 type="var">lmao</arg3>
+ </instruction>
+ <instruction order="56" opcode="TYPE">
+  <arg1 type="var">thetypestring</arg1>
+  <arg2 type="var">var</arg2>
+ </instruction>
+ <instruction order="57" opcode="TYPE">
+  <arg1 type="var">tts</arg1>
+  <arg2 type="int">1</arg2>
+ </instruction>
+ <instruction order="58" opcode="TYPE">
+  <arg1 type="var">tts</arg1>
+  <arg2 type="nil">nil</arg2>
+ </instruction>
+ <instruction order="59" opcode="TYPE">
+  <arg1 type="var">typEEEEEE</arg1>
+  <arg2 type="string">xd</arg2>
+ </instruction>
+ <instruction order="60" opcode="TYPE">
+  <arg1 type="var">TITS</arg1>
+  <arg2 type="bool">true</arg2>
+ </instruction>
+ <instruction order="61" opcode="LABEL">
+  <arg1 type="label">label</arg1>
+ </instruction>
+ <instruction order="62" opcode="LABEL">
+  <arg1 type="label">label1</arg1>
+ </instruction>
+ <instruction order="63" opcode="LABEL">
+  <arg1 type="label">XDDDDD</arg1>
+ </instruction>
+ <instruction order="64" opcode="LABEL">
+  <arg1 type="label">label_label_label_label</arg1>
+ </instruction>
+ <instruction order="65" opcode="LABEL">
+  <arg1 type="label">LF_string</arg1>
+ </instruction>
+ <instruction order="66" opcode="LABEL">
+  <arg1 type="label">string</arg1>
+ </instruction>
+ <instruction order="67" opcode="LABEL">
+  <arg1 type="label">typE</arg1>
+ </instruction>
+ <instruction order="68" opcode="LABEL">
+  <arg1 type="label">TYPE</arg1>
+ </instruction>
+ <instruction order="69" opcode="JUMP">
+  <arg1 type="label">jump</arg1>
+ </instruction>
+ <instruction order="70" opcode="JUMP">
+  <arg1 type="label">JUMP</arg1>
+ </instruction>
+ <instruction order="71" opcode="JUMP">
+  <arg1 type="label">label1</arg1>
+ </instruction>
+ <instruction order="72" opcode="JUMP">
+  <arg1 type="label">defvar</arg1>
+ </instruction>
+ <instruction order="73" opcode="JUMP">
+  <arg1 type="label">janked_up_mario_party</arg1>
+ </instruction>
+ <instruction order="74" opcode="JUMP">
+  <arg1 type="label">kaizo</arg1>
+ </instruction>
+ <instruction order="75" opcode="JUMPIFEQ">
+  <arg1 type="label">notworking</arg1>
+  <arg2 type="var">var1</arg2>
+  <arg3 type="var">var2</arg3>
+ </instruction>
+ <instruction order="76" opcode="JUMPIFEQ">
+  <arg1 type="label">syntaxhighlight</arg1>
+  <arg2 type="bool">true</arg2>
+  <arg3 type="bool">false</arg3>
+ </instruction>
+ <instruction order="77" opcode="JUMPIFNEQ">
+  <arg1 type="label">notworkingeither</arg1>
+  <arg2 type="int">10</arg2>
+  <arg3 type="int">20</arg3>
+ </instruction>
+ <instruction order="78" opcode="EXIT">
+  <arg1 type="var">X_it</arg1>
+ </instruction>
+ <instruction order="79" opcode="EXIT">
+  <arg1 type="int">0</arg1>
+ </instruction>
+ <instruction order="80" opcode="EXIT">
+  <arg1 type="int">1</arg1>
+ </instruction>
+ <instruction order="81" opcode="DPRINT">
+  <arg1 type="var">error_massage</arg1>
+ </instruction>
+ <instruction order="82" opcode="DPRINT">
+  <arg1 type="int">42069</arg1>
+ </instruction>
+ <instruction order="83" opcode="DPRINT">
+  <arg1 type="string">lit</arg1>
+ </instruction>
+ <instruction order="84" opcode="DPRINT">
+  <arg1 type="bool">false</arg1>
+ </instruction>
+ <instruction order="85" opcode="BREAK"/>
+</program>
