@@ -39,6 +39,10 @@ class Parser:
             "AND":interpret.do_Logic,
             "OR":interpret.do_Logic,
             "NOT":interpret.do_NOT,
+            "LABEL":interpret.do_LABEL,
+            "JUMP":interpret.do_JUMP,
+            "JUMPIFEQ":interpret.do_JumpLogic,
+            "JUMPIFNEQ":interpret.do_JumpLogic,
         }
 
         # predefining labels
@@ -54,9 +58,10 @@ class Parser:
                 instruction_found = False
                 continue
 
-            instructions[instruction.attrib['opcode']](instruction, symtable)
-            # print("IP - ", self.IP)
-            self.IP += 1
+            result = instructions[instruction.attrib['opcode']](instruction, symtable)
+
+            self.change_ip(result)
+
 
     def get_instruction(self, ip):
         """Tries to find the instruction with the order == ip.
@@ -67,11 +72,14 @@ class Parser:
                 return instruction
         return None
 
-    def change_ip(self, IP):
-        """Changes the instruction pointer value after one of the
-        JUMP instructions."""
-        self.IP = IP
-        return True
+    def change_ip(self, result):
+        """Increments the instruction pointer or changes the value
+        after one of the JUMP instructions."""
+
+        if result == True or result == False:
+            self.IP += 1
+        else:
+            self.IP = result
 
     def interpret_all_labels(self, symtable):
         """Finds all the label instructions and inserts them into the symtable,
@@ -87,12 +95,16 @@ class Interpret:
     """Interprets(executes) code parsed out of XML by Parser."""
 
     def do_DEFVAR(self, instruction, symtable):
+        # not a variable
+        if instruction[0].attrib['type'] != 'var':
+            sys.exit(53)
+
         return symtable.define_var(instruction[0].text)
 
     def do_MOVE(self, instruction, symtable):
-        # undefined variable
-        if (instruction[0].attrib['type'] != 'var' or symtable.check_defined_var(instruction[0].text) == False):
-            sys.exit(54)
+        # not a variable
+        if instruction[0].attrib['type'] != 'var':
+            sys.exit(53)
 
         type = instruction[1].attrib['type']
         value = None
@@ -130,9 +142,9 @@ class Interpret:
         """All the typechecking and defchecking is done in one function,
         arithmetic computation is done in separate functions at the end."""
 
-        # undefined variable
-        if (instruction[0].attrib['type'] != 'var' or symtable.check_defined_var(instruction[0].text) == False):
-            sys.exit(54)
+        # not a variable
+        if instruction[0].attrib['type'] != 'var':
+            sys.exit(53)
 
         type1 = instruction[1].attrib['type']
         value1 = None
@@ -191,9 +203,9 @@ class Interpret:
         """All the typechecking and defchecking is done in one function,
         comparison computation is done in separate functions at the end."""
 
-        # undefined variable
-        if (instruction[0].attrib['type'] != 'var' or symtable.check_defined_var(instruction[0].text) == False):
-            sys.exit(54)
+        # not a variable
+        if instruction[0].attrib['type'] != 'var':
+            sys.exit(53)
 
         type1 = instruction[1].attrib['type']
         value1 = None
@@ -260,9 +272,9 @@ class Interpret:
         """All the typechecking and defchecking is done in one function,
         logic computation is done in separate functions at the end."""
 
-        # undefined variable
-        if (instruction[0].attrib['type'] != 'var' or symtable.check_defined_var(instruction[0].text) == False):
-            sys.exit(54)
+        # not a variable
+        if instruction[0].attrib['type'] != 'var':
+            sys.exit(53)
 
         type1 = instruction[1].attrib['type']
         value1 = None
@@ -307,9 +319,9 @@ class Interpret:
         return symtable.set_var(name, 'bool', value1 or value2)
 
     def do_NOT(self, instruction, symtable):            #, var, symb1, symb2):
-        # undefined variable
-        if (instruction[0].attrib['type'] != 'var' or symtable.check_defined_var(instruction[0].text) == False):
-            sys.exit(54)
+        # not a variable
+        if instruction[0].attrib['type'] != 'var':
+            sys.exit(53)
 
         type = instruction[1].attrib['type']
         value = None
@@ -326,6 +338,84 @@ class Interpret:
             sys.exit(53)
 
         return symtable.set_var(instruction[0].text, 'bool', not value)
+
+    def do_LABEL(self, instruction, symtable):        #, label):
+        return True
+
+    def do_JUMP(self, instruction, symtable):         #, label):
+        # not a label
+        if instruction[0].attrib['type'] != 'label':
+            sys.exit(53)
+
+        return symtable.get_label(instruction[0].text)
+
+    def do_JumpLogic(self, instruction, symtable):
+        """All the typechecking and defchecking is done in one function,
+        comparison computation is done in separate functions at the end."""
+
+        # not a label
+        if instruction[0].attrib['type'] != 'label':
+            sys.exit(53)
+
+        type1 = instruction[1].attrib['type']
+        value1 = None
+
+        if (type1 == 'var'):
+            value1 = symtable.get_var(instruction[1].text)
+            type1 = value1[0]
+            value1 = value1[1]
+        elif type1 == 'int':
+            value1 = int(instruction[1].text)
+        elif type1 == 'bool':
+            value1 = instruction[1].text == 'true'
+        elif type1 == 'string':
+            value1 = instruction[1].text
+        elif type1 == 'nil':
+            value1 = None
+        else:
+            sys.exit(53)
+
+        type2 = instruction[2].attrib['type']
+        value2 = None
+
+        if (type2 == 'var'):
+            value2 = symtable.get_var(instruction[2].text)
+            type2 = value2[0]
+            value2 = value2[1]
+        elif type2 == 'int':
+            value2 = int(instruction[2].text)
+        elif type2 == 'bool':
+            value2 = instruction[2].text == 'true'
+        elif type2 == 'string':
+            value2 = instruction[2].text
+        elif type2 == 'nil':
+            value2 = None
+        else:
+            sys.exit(53)
+
+        if type1 != type2:
+            sys.exit(53)
+
+        # Actual computation:
+        if instruction.attrib['opcode'] == 'JUMPIFEQ':
+            return self.do_JUMPIFEQ(symtable, instruction[0].text, value1, value2)
+        elif instruction.attrib['opcode'] == 'JUMPIFNEQ':
+            return self.do_JUMPIFNEQ(symtable, instruction[0].text, value1, value2)
+        else:
+            sys.exit(32)
+
+
+    def do_JUMPIFEQ(self, symtable, name, value1, value2):
+        if value1 == value2:
+            return symtable.get_label(name)
+        else:
+            return False
+
+    def do_JUMPIFNEQ(self, symtable, name, value1, value2):
+        if value1 != value2:
+            return symtable.get_label(name)
+        else:
+            return False
 
 
     def do_CREATEFRAME(self, instruction):  #):
@@ -373,18 +463,6 @@ class Interpret:
     def do_TYPE(self, instruction):         #, var, symb):
         return True
 
-    def do_LABEL(self, instruction):        #, label):
-        return True
-
-    def do_JUMP(self, instruction):         #, label):
-        return True
-
-    def do_JUMPIFEQ(self, instruction):     #, label, symb1, symb2):
-        return True
-
-    def do_JUMPIFNEQ(self, instruction):    #, label, symb1, symb2):
-        return True
-
     def do_EXIT(self, instruction):         #, symb):
         return True
 
@@ -425,11 +503,11 @@ class Symtable:
             return True
 
     def set_var(self, name, type, value):
-        if name in self.var_table:
+        if name not in self.var_table:
+            sys.exit(54)
+        else:
             self.var_table[name] = (type, value)
             return True
-        else:
-            return False
 
     def get_var(self, name):
         if name not in self.var_table:
@@ -442,14 +520,14 @@ class Symtable:
 
     def define_label(self, name, IP):
         if name in self.label_table:
-            return False
+            sys.exit(52)
         else:
             self.label_table[name] = IP
             return True
 
     def get_label(self, name):
         if name not in self.label_table:
-            return False
+            sys.exit(52)
         else:
             return self.label_table[name]
 

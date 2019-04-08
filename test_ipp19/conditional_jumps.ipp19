@@ -1,0 +1,10 @@
+.IPPcode19
+DEFVAR GF@c
+MOVE GF@c int@0
+LABEL while1
+JUMPIFEQ skipFive GF@c int@5
+WRITE GF@c
+LABEL skipFive
+ADD GF@c GF@c int@1
+JUMPIFNEQ while1 GF@c int@10
+WRITE string@done
