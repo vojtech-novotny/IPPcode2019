@@ -53,15 +53,25 @@ if input_path == source_path:
 
 
 class Parser:
-    """Main program controller, parses instructions out of XML file."""
+    """Main program controller, parses instructions out of an XML file.
+       XML file is found at the source_path path."""
 
     IP = 1
+    """Instruction pointer."""
+
     tree = ET.parse(source_path)
     root = tree.getroot()
 
     def foo(self, interpret, symtable):
-        """Reads instructions from input and executes them."""
+        """Reads instructions from input checks with the instruction table whether they are valid
+           and executes them.
 
+           Arguments:
+            interpret   - class containing functions that execute corresponding instructions
+            symtable    - table of symbols, containing all the state information about
+                          the IPPcode19 program (except for the instruction pointer)"""
+
+        # the instruction table
         instructions = {
             "MOVE":interpret.do_MOVE,
             "DEFVAR":interpret.do_DEFVAR,
@@ -104,6 +114,7 @@ class Parser:
                 instruction_found = False
                 continue
 
+            # if opcode is not found in the instruction table, program terminates with exit code 32.
             opcode = instruction.attrib['opcode']
             if opcode not in instructions:
                 sys.exit(32)
@@ -143,6 +154,20 @@ class Parser:
 
 class Interpret:
     """Interprets(executes) code parsed out of XML by Parser."""
+
+    """Public functions have these arguments:
+        instruction - xml object containing information about the instructions
+        symtable    - table of symbols, containing all the state information about
+                      the IPPcode19 program (except for instruction pointer)
+
+       Some functions also use these:
+        name        - name of the destination variable
+        valueN      - value of an operand
+        typeN       - type of an operand
+        - Functions that use these are 'private', they are not called from the Parser
+          but rather from other functions inside the Interpret. This is done to reuse
+          code in instances where there are multiple instructions with the same operand
+          semantics but different operators."""
 
     def do_DEFVAR(self, instruction, symtable):
         # not a variable
@@ -774,7 +799,9 @@ class Interpret:
 
 
 class Symtable:
-    """Contains and manages all information about variables and labels."""
+    """Contains and manages all information about variables and labels.
+
+       Warning: Function calls and frames are not implemented. All variables are global!"""
 
     # currently doesn't support frames
     var_table = {}      # { 'var_table':('type', 'value') }
@@ -832,7 +859,8 @@ class Symtable:
 
 
 def Main():
-
+    """Main entry point of the program.
+        Used to predefine all classes and functions before execution."""
     symtable = Symtable()
     interpet = Interpret()
 
@@ -840,4 +868,6 @@ def Main():
     parser.foo(interpet, symtable)
 
 if __name__ == '__main__':
+    Main()
+else
     Main()
