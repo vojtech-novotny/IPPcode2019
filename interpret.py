@@ -59,8 +59,11 @@ class Parser:
     IP = 1
     """Instruction pointer."""
 
-    tree = ET.parse(source_path)
-    root = tree.getroot()
+    try:
+        tree = ET.parse(source_path)
+        root = tree.getroot()
+    except:
+        sys.exit(31)
 
     def foo(self, interpret, symtable):
         """Reads instructions from input checks with the instruction table whether they are valid
@@ -99,6 +102,16 @@ class Parser:
             "STRI2INT":interpret.do_STRI2INT,
             "EXIT":interpret.do_STRI2INT,
             "TYPE":interpret.do_TYPE,
+            # not implemented:
+            "DPRINT":interpret.do_DPRINT,
+            "BREAK":interpret.do_BREAK,
+            "CREATEFRAME":interpret.do_CREATEFRAME,
+            "PUSHFRAME":interpret.do_PUSHFRAME,
+            "POPFRAME":interpret.do_POPFRAME,
+            "CALL":interpret.do_CALL,
+            "RETURN":interpret.do_RETURN,
+            "PUSHS":interpret.do_PUSHS,
+            "POPS":interpret.do_POPS,
         }
 
         # predefining labels
@@ -767,33 +780,33 @@ class Interpret:
     # NOT IMPLEMENTED:
 
     # debug instructions
-    def do_DPRINT(self, instruction):       #, symb):
+    def do_DPRINT(self, instruction, symtable):       #, symb):
         return True
 
-    def do_BREAK(self, instruction):        #):
+    def do_BREAK(self, instruction, symtable):        #):
         return True
 
     # function instructions
-    def do_CREATEFRAME(self, instruction):  #):
+    def do_CREATEFRAME(self, instruction, symtable):  #):
         return True
 
-    def do_PUSHFRAME(self, instruction):    #):
+    def do_PUSHFRAME(self, instruction, symtable):    #):
         return True
 
-    def do_POPFRAME(self, instruction):     #):
+    def do_POPFRAME(self, instruction, symtable):     #):
         return True
 
-    def do_CALL(self, instruction):         #, label):
+    def do_CALL(self, instruction, symtable):         #, label):
         return True
 
-    def do_RETURN(self, instruction):       #):
+    def do_RETURN(self, instruction, symtable):       #):
         return True
 
     # stack instructions
-    def do_PUSHS(self, instruction):        #, symb):
+    def do_PUSHS(self, instruction, symtable):        #, symb):
         return True
 
-    def do_POPS(self, instruction):         #, var):
+    def do_POPS(self, instruction, symtable):         #, var):
         return True
 
 
