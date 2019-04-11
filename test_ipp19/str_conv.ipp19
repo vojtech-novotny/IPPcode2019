@@ -1,0 +1,8 @@
+.ippcode19
+DEFVAR GF@str
+DEFVAR GF@ord
+MOVE GF@str string@Hello
+STRI2INT GF@ord GF@str int@1
+ADD GF@ord GF@ord int@1
+INT2CHAR GF@ord GF@ord
+WRITE GF@ord
