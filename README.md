@@ -1,5 +1,10 @@
+Implementační dokumentace k 2. úloze do IPP 2018/2019
+
+Jméno a příjmení: Vojtěch Novotný
+
+Login: xnovot1f
+
 # IPPcode2019 - interpret.py
-*Vojtěch Novotný - xnovot1f*
 
 ### Skutečná funkcionalita programu
 Implementováno vše není, a tak je zde seznam neimplementovaných instrukcí:
