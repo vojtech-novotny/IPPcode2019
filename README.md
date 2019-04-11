@@ -5,7 +5,7 @@
 Program by měl interpretovat XML reprezentaci kódu jazyka IPPcode19.
 
 ### Skutečná funkcionalita programu
-Nestihl jsem implementovat vše a tak je zde seznam neimplementovaných instrukcí:
+Vše není a tak je zde seznam neimplementovaných instrukcí:
  - DPRINT (dobrovolná instrukce)
  - BREAK (dobrovolná instrukce)
  - CREATEFRAME
@@ -35,9 +35,11 @@ Obsahuje jednu globální tabulku proměnných ve formě slovníku, kde jméno j
 Nakonec obsahuje metody pro správu těchto tabulek.
 
 ### Zpracování XML
-Ke zpracování XML jsem použil standartní knihovnu xml.etree.ElementTree. Jedná se o nejjednodušší knihovnu pro práci s XML bez pokročilejší funkcionality jako například Xpath, ale stačila mi. Problémem by mohlo být, že způsob jaký jsem použil načte kompletní strukturu XML najednou a tak by při dostatečně velkém vstupním souboru a dostatečně malé operační paměti mohlo dojít k naplnění paměti.
+Ke zpracování XML je použita standartní knihovna xml.etree.ElementTree. Jedná se o nejjednodušší knihovnu pro práci s XML bez pokročilejší funkcionality jako například Xpath, ale stačila mi. Problémem by mohlo být, že způsob jaký je použit načte kompletní strukturu XML najednou a tak by při dostatečně velkém vstupním souboru a dostatečně malé operační paměti mohlo dojít k naplnění paměti.
 
 Jako první projde Parser celý program a načte všechny LABEL instrukce a vloží je do tabulky návěští. Poté vyhledává ve struktuře elementy s atributem order rovným aktuální hodnotě čítače instrukcí (ten je potupně inkrementován, případně modifikován skokovými instrukcemi).
 
 ### Zpracování argumentů programu
-Ke zpracování programových argumentů ('-i', '-s') jsem využil modulu argparse. Umožňuje jednoduchou zprávu argumentů a automatické vytvoření nápovědy spouštění programu při předání argumentu '-h' ('--help').
+Ke zpracování programových argumentů ('-i', '-s') je využit modulu argparse. Umožňuje jednoduchou správu argumentů a automatické vytvoření nápovědy spouštění programu při předání argumentu '-h' ('--help').
+
+
