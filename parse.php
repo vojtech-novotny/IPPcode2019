@@ -241,7 +241,7 @@
         else exit(23);
       } elseif (preg_match_all(self::R_READ, $line)) {
         if (preg_match_all(self::R_VAR, $tokens[1]) && preg_match_all(self::R_TYPEARG, $tokens[2]) && ($token_count == 3 || preg_match_all(self::R_COMMENT, $tokens[3])))
-  			   $xmlm->write_instruction('READ', $tokens[1]);
+  			   $xmlm->write_instruction('READ', $tokens[1], $tokens[2]);
         else exit(23);
       } elseif (preg_match_all(self::R_WRITE, $line)) {
         if (preg_match_all(self::R_SYMB, $tokens[1]) && ($token_count == 2 || preg_match_all(self::R_COMMENT, $tokens[2])))
@@ -425,8 +425,14 @@
         $this->writer->startElement($arg_name);
         $this->writer->startAttribute('type');
 
-        if(count($arg_attributes) == 1) {
+        if(count($arg_attributes) == 1 && $arg_name == 'arg1') {
           $this->writer->text('label');
+          $this->writer->endAttribute();
+          $this->writer->text($arg_attributes[0]);
+          $this->writer->endElement();
+          return 0;
+        } elseif(count($arg_attributes) == 1 && $arg_name == 'arg2') {
+          $this->writer->text('type');
           $this->writer->endAttribute();
           $this->writer->text($arg_attributes[0]);
           $this->writer->endElement();
