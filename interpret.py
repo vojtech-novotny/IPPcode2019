@@ -77,6 +77,10 @@ class Parser:
             "JUMPIFEQ":interpret.do_JumpLogic,
             "JUMPIFNEQ":interpret.do_JumpLogic,
             "READ":interpret.do_READ,
+            "STRLEN":interpret.do_STRLEN,
+            "CONCAT":interpret.do_CONCAT,
+            "GETCHAR":interpret.do_GETCHAR,
+            "SETCHAR":interpret.do_SETCHAR,
         }
 
         # predefining labels
@@ -487,6 +491,149 @@ class Interpret:
             sys.exit(53)
 
 
+    def do_STRLEN(self, instruction, symtable):       #, var, symb):
+        # not a variable
+        if instruction[0].attrib['type'] != 'var':
+            sys.exit(53)
+
+        type = instruction[1].attrib['type']
+        value = None
+
+        if (type == 'var'):
+            value = symtable.get_var(instruction[1].text)
+            type = value[0]
+            if (type != 'string'):
+                sys.exit(53)
+            value = value[1]
+        elif type == 'string':
+            value = instruction[1].text
+        else:
+            sys.exit(53)
+
+        return symtable.set_var(instruction[0].text, 'int', len(value))
+
+    def do_CONCAT(self, instruction, symtable):       #, var, symb1, symb2):
+        # not a variable
+        if instruction[0].attrib['type'] != 'var':
+            sys.exit(53)
+
+        type1 = instruction[1].attrib['type']
+        value1 = None
+
+        if (type1 == 'var'):
+            value1 = symtable.get_var(instruction[1].text)
+            type1 = value1[0]
+            if (type1 != 'string'):
+                sys.exit(53)
+            value1 = value1[1]
+        elif type1 == 'string':
+            value1 = instruction[1].text
+        else:
+            sys.exit(53)
+
+        type2 = instruction[2].attrib['type']
+        value2 = None
+
+        if (type2 == 'var'):
+            value2 = symtable.get_var(instruction[2].text)
+            type2 = value2[0]
+            if (type2 != 'string'):
+                sys.exit(53)
+            value2 = value2[1]
+        elif type2 == 'string':
+            value2 = instruction[2].text
+        else:
+            sys.exit(53)
+
+        return symtable.set_var(instruction[0].text, 'string', value1 + value2)
+
+    def do_GETCHAR(self, instruction, symtable):      #, var, symb1, symb2):
+        # not a variable
+        if instruction[0].attrib['type'] != 'var':
+            sys.exit(53)
+
+        type1 = instruction[1].attrib['type']
+        value1 = None
+
+        if (type1 == 'var'):
+            value1 = symtable.get_var(instruction[1].text)
+            type1 = value1[0]
+            if (type1 != 'string'):
+                sys.exit(53)
+            value1 = value1[1]
+        elif type1 == 'string':
+            value1 = instruction[1].text
+        else:
+            sys.exit(53)
+
+        type2 = instruction[2].attrib['type']
+        value2 = None
+
+        if (type2 == 'var'):
+            value2 = symtable.get_var(instruction[2].text)
+            type2 = value2[0]
+            if (type2 != 'int'):
+                sys.exit(53)
+            value2 = value2[1]
+        elif type2 == 'int':
+            value2 = int(instruction[2].text)
+        else:
+            sys.exit(53)
+
+        if value2 >= len(value1):
+            sys.exit(58)
+
+        return symtable.set_var(instruction[0].text, 'string', value1[value2])
+
+    def do_SETCHAR(self, instruction, symtable):      #, var, symb1, symb2):
+        # not a variable
+        if instruction[0].attrib['type'] != 'var':
+            sys.exit(53)
+
+        value0 = symtable.get_var(instruction[0].text)
+        type0 = value0[0]
+        if type0 != 'string':
+            sys.exit(53)
+        value0 = value0[1]
+
+        type1 = instruction[1].attrib['type']
+        value1 = None
+
+        if (type1 == 'var'):
+            value1 = symtable.get_var(instruction[1].text)
+            type1 = value1[0]
+            if (type1 != 'int'):
+                sys.exit(53)
+            value1 = value1[1]
+        elif type1 == 'int':
+            value1 = int(instruction[1].text)
+        else:
+            sys.exit(53)
+
+        type2 = instruction[2].attrib['type']
+        value2 = None
+
+        if (type2 == 'var'):
+            value2 = symtable.get_var(instruction[2].text)
+            type2 = value2[0]
+            if (type2 != 'string'):
+                sys.exit(53)
+            value2 = value2[1]
+        elif type2 == 'string':
+            value2 = instruction[2].text
+        else:
+            sys.exit(53)
+
+        if value1 >= len(value0) or len(value2) == 0:
+            sys.exit(58)
+
+        value0_list = list(value0)
+        value0_list[value1] = value2[0]
+        value0 = ''.join(value0_list)
+
+        return symtable.set_var(instruction[0].text, 'string', value0)
+
+
 
     def do_CREATEFRAME(self, instruction):  #):
         return True
@@ -513,18 +660,6 @@ class Interpret:
         return True
 
     def do_STRI2INT(self, instruction):     #, var, symb1, symb2):
-        return True
-
-    def do_CONCAT(self, instruction):       #, var, symb1, symb2):
-        return True
-
-    def do_STRLEN(self, instruction):       #, var, symb):
-        return True
-
-    def do_GETCHAR(self, instruction):      #, var, symb1, symb2):
-        return True
-
-    def do_SETCHAR(self, instruction):      #, var, symb1, symb2):
         return True
 
     def do_TYPE(self, instruction):         #, var, symb):

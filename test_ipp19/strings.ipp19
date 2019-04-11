@@ -1,0 +1,15 @@
+.ippcode19
+DEFVAR GF@string1
+DEFVAR GF@len
+MOVE GF@string1 string@Hello
+WRITE GF@string1
+STRLEN GF@len GF@string1
+WRITE GF@len
+
+CONCAT GF@string1 GF@string1 string@World
+WRITE GF@string1
+
+DEFVAR GF@replace
+GETCHAR GF@replace GF@string1 int@4
+SETCHAR GF@string1 int@1 GF@replace
+WRITE GF@string1
