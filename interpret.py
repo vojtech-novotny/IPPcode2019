@@ -206,7 +206,7 @@ class Interpret:
         if (type1 == 'var'):
             type1 = symtable.get_var(instruction[1].text)[0]
 
-        return symtable.set_var(instruction[0].text, "string", (type1 == None)? "", type1)
+        return symtable.set_var(instruction[0].text, "string", "" if type1 == None else type1)
 
     # IO instructions
     def do_WRITE(self, instruction, symtable):

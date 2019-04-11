@@ -1,0 +1,16 @@
+.ippcode19
+DEFVAR GF@type
+DEFVAR GF@str
+MOVE GF@str string@lol
+TYPE GF@type GF@str
+WRITE GF@type
+TYPE GF@type int@10
+WRITE GF@type
+TYPE GF@type nil@nil
+WRITE GF@type
+DEFVAR GF@notdefined
+TYPE GF@type GF@notdefined
+WRITE GF@type
+
+EXIT int@0
+WRITE string@unreachable
