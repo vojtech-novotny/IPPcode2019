@@ -3,23 +3,56 @@ import sys
 import argparse
 
 # reading command line arguments
-arg_parser = argparse.ArgumentParser(description='Do some iterpreting.')
-arg_parser.add_argument('-i', action='store', dest='input')
+arg_parser = argparse.ArgumentParser(description='Program loads XML representation of IPPcode19 program from input and interprets it.')
+arg_parser.add_argument('-s','--source', action='store', dest='source', help="Path to the file containing input for the program. If parameter is missing, stdin is used. SOURCE and INPUT can't be identical paths (and one of them always has to be defined).")
+arg_parser.add_argument('-i','--input', action='store', dest='input', help="Path to the file containing source for the program. If parameter is missing, stdin is used. SOURCE and INPUT can't be identical paths (and one of them always has to be defined).")
 args = arg_parser.parse_args()
 
+source_path = None
 input_path = None
+input_file = None
+help = """
+Program loads XML representation of IPPcode19 program from input and interprets it.
+
+Program parameters:
+ -h, --help
+    ... Prints out this help message and terminates.
+
+ -i <ipath>, --input <ipath>
+    ... Path to the file containing input for the program.
+        If parameter is missing, stdin is used.
+
+ -s <spath>, --source <spath>
+    ... Path to the file containing source for the program.
+        If parameter is missing, stdin is used.
+
+ SOURCE and INPUT can't be identical paths (and one of them always
+ has to be defined).
+"""
+
+if args.source != None:
+    source_path = args.source
+else:
+    source_path = sys.stdin
 
 if args.input != None:
     input_path = args.input
+    input_file = open(input_path, 'r')
 else:
     input_path = sys.stdin
+    input_file = sys.stdin
+
+if input_path == source_path:
+    sys.exit(10)
+
+
 
 
 class Parser:
     """Main program controller, parses instructions out of XML file."""
 
     IP = 1
-    tree = ET.parse(input_path)
+    tree = ET.parse(source_path)
     root = tree.getroot()
 
     def foo(self, interpret, symtable):
@@ -43,10 +76,14 @@ class Parser:
             "JUMP":interpret.do_JUMP,
             "JUMPIFEQ":interpret.do_JumpLogic,
             "JUMPIFNEQ":interpret.do_JumpLogic,
+            "READ":interpret.do_READ,
         }
 
         # predefining labels
         self.interpret_all_labels(symtable)
+
+        # opening input file
+        # input_file = open(input_path, 'r')
 
         instruction_found = True
 
@@ -182,6 +219,8 @@ class Interpret:
         elif instruction.attrib['opcode'] == 'MUL':
             return self.do_MUL(symtable, instruction[0].text, value1, value2, type1)
         elif instruction.attrib['opcode'] == 'IDIV':
+            if (value2 == 0):
+                sys.exit(57)
             return self.do_IDIV(symtable, instruction[0].text, value1, value2, type1)
         else:
             sys.exit(32)
@@ -339,6 +378,7 @@ class Interpret:
 
         return symtable.set_var(instruction[0].text, 'bool', not value)
 
+
     def do_LABEL(self, instruction, symtable):        #, label):
         return True
 
@@ -348,6 +388,7 @@ class Interpret:
             sys.exit(53)
 
         return symtable.get_label(instruction[0].text)
+
 
     def do_JumpLogic(self, instruction, symtable):
         """All the typechecking and defchecking is done in one function,
@@ -404,7 +445,6 @@ class Interpret:
         else:
             sys.exit(32)
 
-
     def do_JUMPIFEQ(self, symtable, name, value1, value2):
         if value1 == value2:
             return symtable.get_label(name)
@@ -416,6 +456,36 @@ class Interpret:
             return symtable.get_label(name)
         else:
             return False
+
+
+    def do_READ(self, instruction, symtable):         #, var, symb1, symb2):
+        # not a variable
+        if instruction[0].attrib['type'] != 'var':
+            sys.exit(53)
+
+        input = input_file.readline()
+        # getting rid of trailing newlines (readline() artefact)
+        input = input.rstrip('\n')
+
+        type = instruction[1].attrib['type']
+        value = instruction[1].text;
+
+        if type == 'type':
+            if value == 'int':
+                try:
+                    input = int(input)
+                except:
+                    input = 0
+                return symtable.set_var(instruction[0].text, 'int', int(input))
+            elif value == 'bool':
+                return symtable.set_var(instruction[0].text, 'bool', input.lower() == 'true')
+            elif value == 'string':
+                return symtable.set_var(instruction[0].text, 'int', input)
+            else:
+                sys.exit(53)
+        else:
+            sys.exit(53)
+
 
 
     def do_CREATEFRAME(self, instruction):  #):
@@ -443,9 +513,6 @@ class Interpret:
         return True
 
     def do_STRI2INT(self, instruction):     #, var, symb1, symb2):
-        return True
-
-    def do_READ(self, instruction):         #, var, symb1, symb2):
         return True
 
     def do_CONCAT(self, instruction):       #, var, symb1, symb2):

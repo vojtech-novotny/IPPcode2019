@@ -1,0 +1,18 @@
+.ippcode19
+DEFVAR GF@input
+
+WRITE string@int\032
+READ GF@input int
+ADD GF@input GF@input int@1
+WRITE GF@input
+
+WRITE string@string\032
+READ GF@input string
+WRITE GF@input
+
+WRITE string@bool\032
+READ GF@input bool
+AND GF@input GF@input bool@true
+WRITE GF@input
+AND GF@input GF@input bool@false
+WRITE GF@input
