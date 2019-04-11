@@ -8,9 +8,13 @@ arg_parser.add_argument('-s','--source', action='store', dest='source', help="Pa
 arg_parser.add_argument('-i','--input', action='store', dest='input', help="Path to the file containing source for the program. If parameter is missing, stdin is used. SOURCE and INPUT can't be identical paths (and one of them always has to be defined).")
 args = arg_parser.parse_args()
 
+# file containing XML representation of IPPcode19 source code
 source_path = None
+# file containing text for READ instructions
 input_path = None
 input_file = None
+
+# unused - help is generated using arg_parser functions.
 help = """
 Program loads XML representation of IPPcode19 program from input and interprets it.
 
@@ -83,13 +87,12 @@ class Parser:
             "SETCHAR":interpret.do_SETCHAR,
             "INT2CHAR":interpret.do_INT2CHAR,
             "STRI2INT":interpret.do_STRI2INT,
+            "EXIT":interpret.do_STRI2INT,
+            "TYPE":interpret.do_TYPE,
         }
 
         # predefining labels
         self.interpret_all_labels(symtable)
-
-        # opening input file
-        # input_file = open(input_path, 'r')
 
         instruction_found = True
 
@@ -101,7 +104,11 @@ class Parser:
                 instruction_found = False
                 continue
 
-            result = instructions[instruction.attrib['opcode']](instruction, symtable)
+            opcode = instruction.attrib['opcode']
+            if opcode not in instructions:
+                sys.exit(32)
+
+            result = instructions[opcode](instruction, symtable)
 
             self.change_ip(result)
 
@@ -169,6 +176,39 @@ class Interpret:
 
         return symtable.set_var(instruction[0].text, type, value)
 
+    def do_EXIT(self, instruction, symtable):         #, symb):
+        type = instruction[0].attrib['type']
+        value = None
+
+        if (type == 'var'):
+            value = symtable.get_var(instruction[0].text)
+            type = value[0]
+            if (type != 'int'):
+                sys.exit(53)
+            value = value[1]
+        elif type == 'int':
+            value = int(instruction[0].text)
+        else:
+            sys.exit(53)
+
+        if value < 0 or value > 49:
+            sys.exit(57)
+
+        sys.exit(value)
+
+    def do_TYPE(self, instruction, symtable):
+        # not a variable
+        if instruction[0].attrib['type'] != 'var':
+            sys.exit(53)
+
+        type1 = instruction[1].attrib['type']
+
+        if (type1 == 'var'):
+            type1 = symtable.get_var(instruction[1].text)[0]
+
+        return symtable.set_var(instruction[0].text, "string", (type1 == None)? "", type1)
+
+    # IO instructions
     def do_WRITE(self, instruction, symtable):
         result = None
 
@@ -180,7 +220,35 @@ class Interpret:
         print(result)
         return True
 
+    def do_READ(self, instruction, symtable):         #, var, symb1, symb2):
+        # not a variable
+        if instruction[0].attrib['type'] != 'var':
+            sys.exit(53)
 
+        input = input_file.readline()
+        # getting rid of trailing newlines (readline() artefact)
+        input = input.rstrip('\n')
+
+        type = instruction[1].attrib['type']
+        value = instruction[1].text;
+
+        if type == 'type':
+            if value == 'int':
+                try:
+                    input = int(input)
+                except:
+                    input = 0
+                return symtable.set_var(instruction[0].text, 'int', int(input))
+            elif value == 'bool':
+                return symtable.set_var(instruction[0].text, 'bool', input.lower() == 'true')
+            elif value == 'string':
+                return symtable.set_var(instruction[0].text, 'int', input)
+            else:
+                sys.exit(53)
+        else:
+            sys.exit(53)
+
+    # arithmetic instructions
     def do_Arithmetic(self, instruction, symtable):
         """All the typechecking and defchecking is done in one function,
         arithmetic computation is done in separate functions at the end."""
@@ -243,7 +311,7 @@ class Interpret:
     def do_IDIV(self, symtable, name, value1, value2, type):
         return symtable.set_var(name, type, value1 // value2)
 
-
+    # comparison instructions
     def do_Comparison(self, instruction, symtable):
         """All the typechecking and defchecking is done in one function,
         comparison computation is done in separate functions at the end."""
@@ -312,7 +380,7 @@ class Interpret:
     def do_EQ(self, symtable, name, value1, value2, type1, type2):           #, var, symb1, symb2):
         return symtable.set_var(name, 'bool', type1 == type2 and value1 == value2)
 
-
+    # logic instructions
     def do_Logic(self, instruction, symtable):
         """All the typechecking and defchecking is done in one function,
         logic computation is done in separate functions at the end."""
@@ -384,7 +452,7 @@ class Interpret:
 
         return symtable.set_var(instruction[0].text, 'bool', not value)
 
-
+    # flow control instructions
     def do_LABEL(self, instruction, symtable):        #, label):
         return True
 
@@ -394,7 +462,6 @@ class Interpret:
             sys.exit(53)
 
         return symtable.get_label(instruction[0].text)
-
 
     def do_JumpLogic(self, instruction, symtable):
         """All the typechecking and defchecking is done in one function,
@@ -463,36 +530,7 @@ class Interpret:
         else:
             return False
 
-
-    def do_READ(self, instruction, symtable):         #, var, symb1, symb2):
-        # not a variable
-        if instruction[0].attrib['type'] != 'var':
-            sys.exit(53)
-
-        input = input_file.readline()
-        # getting rid of trailing newlines (readline() artefact)
-        input = input.rstrip('\n')
-
-        type = instruction[1].attrib['type']
-        value = instruction[1].text;
-
-        if type == 'type':
-            if value == 'int':
-                try:
-                    input = int(input)
-                except:
-                    input = 0
-                return symtable.set_var(instruction[0].text, 'int', int(input))
-            elif value == 'bool':
-                return symtable.set_var(instruction[0].text, 'bool', input.lower() == 'true')
-            elif value == 'string':
-                return symtable.set_var(instruction[0].text, 'int', input)
-            else:
-                sys.exit(53)
-        else:
-            sys.exit(53)
-
-
+    # string manipulation instructions
     def do_STRLEN(self, instruction, symtable):       #, var, symb):
         # not a variable
         if instruction[0].attrib['type'] != 'var':
@@ -701,6 +739,16 @@ class Interpret:
 
 
 
+    # NOT IMPLEMENTED:
+
+    # debug instructions
+    def do_DPRINT(self, instruction):       #, symb):
+        return True
+
+    def do_BREAK(self, instruction):        #):
+        return True
+
+    # function instructions
     def do_CREATEFRAME(self, instruction):  #):
         return True
 
@@ -716,22 +764,11 @@ class Interpret:
     def do_RETURN(self, instruction):       #):
         return True
 
+    # stack instructions
     def do_PUSHS(self, instruction):        #, symb):
         return True
 
     def do_POPS(self, instruction):         #, var):
-        return True
-
-    def do_TYPE(self, instruction):         #, var, symb):
-        return True
-
-    def do_EXIT(self, instruction):         #, symb):
-        return True
-
-    def do_DPRINT(self, instruction):       #, symb):
-        return True
-
-    def do_BREAK(self, instruction):        #):
         return True
 
 
@@ -741,12 +778,12 @@ class Symtable:
 
     # currently doesn't support frames
     var_table = {}      # { 'var_table':('type', 'value') }
+    label_table = {}    # { 'label_table':'instruction_pointer' }
 
-    # Not implemented:
+    # NOT IMPLEMENTED:
     LF_table = {}      # { 'var_table':('type', 'value') }
     GF_table = {}       # { 'var_table':('type', 'value') }
     TF_table = {}       # { 'var_table':('type', 'value') }
-    label_table = {}    # { 'label_table':'instruction_pointer' }
 
     def check_defined_var(self, name):
         return name in self.var_table
@@ -761,7 +798,7 @@ class Symtable:
         if name in self.var_table:
             sys.exit(52)
         else:
-            self.var_table[name] = ('nil', 'nil')
+            self.var_table[name] = (None, None)
             return True
 
     def set_var(self, name, type, value):
